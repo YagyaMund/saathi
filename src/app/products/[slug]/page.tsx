@@ -1,4 +1,5 @@
-import { InsightPanel } from "@/components/insight-panel";
+import { FloorNote } from "@/components/floor-note";
+import { FloorNoteSkeleton } from "@/components/floor-note-skeleton";
 import { StateMessage } from "@/components/state-message";
 import { Badge } from "@/components/ui/badge";
 import { CatalogReadError, getProduct } from "@/lib/catalog";
@@ -7,6 +8,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +94,9 @@ export default async function ProductPage({
             </div>
           </dl>
           <div className="mt-8">
-            <InsightPanel slug={product.slug} />
+            <Suspense fallback={<FloorNoteSkeleton />}>
+              <FloorNote product={product} />
+            </Suspense>
           </div>
         </div>
       </div>

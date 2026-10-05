@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -13,6 +12,7 @@ import {
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const links = [
   { href: "/", label: "Floor" },
@@ -21,7 +21,7 @@ const links = [
   { href: "/insights", label: "Insights" },
 ];
 
-function NavLinks({ onNavigate }: { onNavigate?: boolean }) {
+function NavLinks({ onNavigate, large }: { onNavigate?: () => void; large?: boolean }) {
   const pathname = usePathname();
   return (
     <>
@@ -30,18 +30,13 @@ function NavLinks({ onNavigate }: { onNavigate?: boolean }) {
         const className = active
           ? "text-foreground"
           : "text-muted-foreground hover:text-foreground";
-        if (onNavigate) {
-          return (
-            <SheetClose
-              key={link.href}
-              render={<Link href={link.href} className={`text-lg ${className}`} />}
-            >
-              {link.label}
-            </SheetClose>
-          );
-        }
         return (
-          <Link key={link.href} href={link.href} className={`text-sm ${className}`}>
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={onNavigate}
+            className={`${large ? "text-lg" : "text-sm"} ${className}`}
+          >
             {link.label}
           </Link>
         );
@@ -51,6 +46,7 @@ function NavLinks({ onNavigate }: { onNavigate?: boolean }) {
 }
 
 export function SiteHeader() {
+  const [open, setOpen] = useState(false);
   return (
     <header className="border-b border-border/80 bg-background/85 backdrop-blur-sm">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -60,7 +56,7 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-6 md:flex">
           <NavLinks />
         </nav>
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger
             render={
               <Button
@@ -79,7 +75,7 @@ export function SiteHeader() {
               <SheetDescription>Coast and trail, edited down.</SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col gap-4 px-4">
-              <NavLinks onNavigate />
+              <NavLinks large onNavigate={() => setOpen(false)} />
             </nav>
           </SheetContent>
         </Sheet>

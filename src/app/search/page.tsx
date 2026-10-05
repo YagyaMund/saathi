@@ -1,5 +1,8 @@
-import { SearchPanel } from "@/components/search-panel";
+import { SearchForm } from "@/components/search-form";
+import { SearchResults } from "@/components/search-results";
+import { SearchSkeleton } from "@/components/search-skeleton";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Search",
@@ -25,8 +28,11 @@ export default async function SearchPage({
         Product documents live in a Discovery Engine data store. This page calls that search when
         the project and data store are set, and matches the local catalog when they are not.
       </p>
-      <div className="mt-8">
-        <SearchPanel query={query} />
+      <div className="mt-8 space-y-8">
+        <SearchForm key={`form-${query}`} query={query} />
+        <Suspense key={`results-${query}`} fallback={<SearchSkeleton />}>
+          <SearchResults query={query} />
+        </Suspense>
       </div>
     </div>
   );

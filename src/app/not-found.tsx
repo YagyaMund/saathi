@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -9,9 +10,9 @@ export default function NotFound() {
       <p className="mt-4 text-sm leading-6 text-muted-foreground">
         The catalog is twelve products. If a link went stale, start from the floor.
       </p>
-      <Button render={<Link href="/" />} className="mt-6 h-10 px-4">
+      <Link href="/" className={cn(buttonVariants(), "mt-6 h-10 px-4")}>
         Back to the floor
-      </Button>
+      </Link>
     </div>
   );
 }
