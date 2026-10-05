@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" role="img">
+  <rect width="640" height="800" fill="#efe8dc"/>
+  <g color="#3d342c" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 280h280c22 0 40 18 40 40v240H200c-22 0-40-18-40-40z" fill="none" stroke="currentColor" stroke-width="14"/>
+      <path d="M200 360h240M200 420h200" stroke="#a15b3a" stroke-width="8"/>
+      <path d="M430 340c40 20 50 70 20 110" fill="none" stroke="currentColor" stroke-width="10"/>
+  </g>
+</svg>

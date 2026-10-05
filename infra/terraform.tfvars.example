@@ -1,0 +1,4 @@
+project_id       = "your-gcp-project-id"
+region           = "us-central1"
+database_engine  = "cloudsql" # or "alloydb"
+enable_cloud_run = false

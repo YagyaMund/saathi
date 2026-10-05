@@ -1,0 +1,283 @@
+{
+  "customers": [
+    {
+      "id": "c-maya",
+      "email": "maya.chen@cove.example",
+      "fullName": "Maya Chen",
+      "city": "Portland",
+      "region": "OR",
+      "segment": "Coastal",
+      "createdAt": "2025-11-02T15:00:00Z"
+    },
+    {
+      "id": "c-andre",
+      "email": "andre.walsh@cove.example",
+      "fullName": "Andre Walsh",
+      "city": "Seattle",
+      "region": "WA",
+      "segment": "Trail",
+      "createdAt": "2025-11-18T18:30:00Z"
+    },
+    {
+      "id": "c-priya",
+      "email": "priya.nair@cove.example",
+      "fullName": "Priya Nair",
+      "city": "Eugene",
+      "region": "OR",
+      "segment": "New",
+      "createdAt": "2025-12-04T17:10:00Z"
+    },
+    {
+      "id": "c-luis",
+      "email": "luis.ortega@cove.example",
+      "fullName": "Luis Ortega",
+      "city": "Bend",
+      "region": "OR",
+      "segment": "Trail",
+      "createdAt": "2025-12-11T20:00:00Z"
+    },
+    {
+      "id": "c-helen",
+      "email": "helen.park@cove.example",
+      "fullName": "Helen Park",
+      "city": "Astoria",
+      "region": "OR",
+      "segment": "Coastal",
+      "createdAt": "2026-01-03T16:40:00Z"
+    },
+    {
+      "id": "c-jonah",
+      "email": "jonah.ellis@cove.example",
+      "fullName": "Jonah Ellis",
+      "city": "Boise",
+      "region": "ID",
+      "segment": "Trail",
+      "createdAt": "2026-01-09T19:05:00Z"
+    },
+    {
+      "id": "c-samira",
+      "email": "samira.haddad@cove.example",
+      "fullName": "Samira Haddad",
+      "city": "Tacoma",
+      "region": "WA",
+      "segment": "New",
+      "createdAt": "2026-02-14T18:15:00Z"
+    },
+    {
+      "id": "c-chris",
+      "email": "chris.dalton@cove.example",
+      "fullName": "Chris Dalton",
+      "city": "Olympia",
+      "region": "WA",
+      "segment": "Coastal",
+      "createdAt": "2026-01-20T21:25:00Z"
+    },
+    {
+      "id": "c-nora",
+      "email": "nora.blake@cove.example",
+      "fullName": "Nora Blake",
+      "city": "Salem",
+      "region": "OR",
+      "segment": "New",
+      "createdAt": "2026-05-28T17:45:00Z"
+    },
+    {
+      "id": "c-evan",
+      "email": "evan.brooks@cove.example",
+      "fullName": "Evan Brooks",
+      "city": "Spokane",
+      "region": "WA",
+      "segment": "New",
+      "createdAt": "2026-03-01T16:05:00Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "o-1001",
+      "customerId": "c-maya",
+      "orderedAt": "2026-01-08T16:20:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "harbor-weekender", "quantity": 1 },
+        { "productId": "trail-socks", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1002",
+      "customerId": "c-andre",
+      "orderedAt": "2026-01-14T19:05:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [{ "productId": "weather-shell", "quantity": 1 }]
+    },
+    {
+      "id": "o-1003",
+      "customerId": "c-priya",
+      "orderedAt": "2026-01-22T18:40:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "field-journal", "quantity": 1 },
+        { "productId": "kiln-bottle", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1004",
+      "customerId": "c-luis",
+      "orderedAt": "2026-02-03T17:15:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "drift-throw", "quantity": 1 },
+        { "productId": "beacon-lantern", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1005",
+      "customerId": "c-helen",
+      "orderedAt": "2026-02-11T20:10:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "camp-enamel", "quantity": 2 },
+        { "productId": "kiln-bottle", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1006",
+      "customerId": "c-maya",
+      "orderedAt": "2026-02-18T15:55:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "tide-merino", "quantity": 1 }]
+    },
+    {
+      "id": "o-1007",
+      "customerId": "c-jonah",
+      "orderedAt": "2026-03-02T18:25:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "coast-glass", "quantity": 1 },
+        { "productId": "weather-shell", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1008",
+      "customerId": "c-andre",
+      "orderedAt": "2026-03-09T19:40:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "harbor-weekender", "quantity": 1 },
+        { "productId": "trail-socks", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1009",
+      "customerId": "c-evan",
+      "orderedAt": "2026-03-12T16:30:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "kiln-bottle", "quantity": 1 }]
+    },
+    {
+      "id": "o-1010",
+      "customerId": "c-chris",
+      "orderedAt": "2026-03-21T21:05:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "salt-linen", "quantity": 1 },
+        { "productId": "cedar-trees", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1011",
+      "customerId": "c-luis",
+      "orderedAt": "2026-04-04T17:50:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "tide-merino", "quantity": 1 }]
+    },
+    {
+      "id": "o-1012",
+      "customerId": "c-samira",
+      "orderedAt": "2026-04-16T18:20:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "beacon-lantern", "quantity": 1 },
+        { "productId": "camp-enamel", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1013",
+      "customerId": "c-maya",
+      "orderedAt": "2026-04-28T15:35:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "drift-throw", "quantity": 1 }]
+    },
+    {
+      "id": "o-1014",
+      "customerId": "c-jonah",
+      "orderedAt": "2026-05-06T19:15:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "harbor-weekender", "quantity": 1 }]
+    },
+    {
+      "id": "o-1015",
+      "customerId": "c-chris",
+      "orderedAt": "2026-05-14T20:45:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [{ "productId": "weather-shell", "quantity": 1 }]
+    },
+    {
+      "id": "o-1016",
+      "customerId": "c-helen",
+      "orderedAt": "2026-05-22T16:55:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "salt-linen", "quantity": 1 }]
+    },
+    {
+      "id": "o-1017",
+      "customerId": "c-andre",
+      "orderedAt": "2026-06-02T18:05:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "coast-glass", "quantity": 1 }]
+    },
+    {
+      "id": "o-1018",
+      "customerId": "c-luis",
+      "orderedAt": "2026-06-11T19:30:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [
+        { "productId": "trail-socks", "quantity": 2 },
+        { "productId": "kiln-bottle", "quantity": 1 }
+      ]
+    },
+    {
+      "id": "o-1019",
+      "customerId": "c-priya",
+      "orderedAt": "2026-06-19T17:25:00Z",
+      "channel": "web",
+      "status": "fulfilled",
+      "items": [{ "productId": "cedar-trees", "quantity": 1 }]
+    },
+    {
+      "id": "o-1020",
+      "customerId": "c-nora",
+      "orderedAt": "2026-06-25T18:50:00Z",
+      "channel": "store",
+      "status": "fulfilled",
+      "items": [{ "productId": "field-journal", "quantity": 1 }]
+    }
+  ]
+}

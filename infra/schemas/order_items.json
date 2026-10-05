@@ -1,0 +1,8 @@
+[
+  { "name": "order_item_id", "type": "STRING", "mode": "REQUIRED" },
+  { "name": "order_id", "type": "STRING", "mode": "REQUIRED" },
+  { "name": "product_id", "type": "STRING", "mode": "REQUIRED" },
+  { "name": "quantity", "type": "INT64", "mode": "REQUIRED" },
+  { "name": "unit_price", "type": "NUMERIC", "mode": "REQUIRED" },
+  { "name": "line_total", "type": "NUMERIC", "mode": "REQUIRED" }
+]

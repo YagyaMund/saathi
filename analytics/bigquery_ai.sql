@@ -1,0 +1,72 @@
+-- BigQuery AI examples for Cove Supply.
+-- These statements are commented because they call Vertex AI and will fail
+-- until the connection from terraform exists and the remote model is created.
+--
+-- After terraform apply:
+--   1. Confirm the connection id in the output `vertex_connection_id` (cove-vertex).
+--   2. The connection's service account needs roles/aiplatform.user.
+--      Terraform grants that. Wait a minute for the IAM binding to propagate.
+--   3. Replace PROJECT_ID and REGION below, then run the uncommented script
+--      in the BigQuery console or with bq query.
+--
+-- The function used here is AI.GENERATE_TEXT, the current table-valued
+-- BigQuery AI interface for a remote Gemini model. The prompt subquery must
+-- expose a column named prompt. The generated text comes back as result.
+--
+-- Connection created by infra/:
+--   PROJECT_ID.REGION.cove-vertex
+-- Model endpoint:
+--   gemini-2.5-flash
+
+-- CREATE OR REPLACE MODEL `cove_analytics.gemini_flash`
+-- REMOTE WITH CONNECTION `PROJECT_ID.REGION.cove-vertex`
+-- OPTIONS (ENDPOINT = 'gemini-2.5-flash');
+
+-- Floor notes for every product, grounded only in the warehouse columns.
+-- SELECT
+--   product_id,
+--   name,
+--   result AS insight
+-- FROM AI.GENERATE_TEXT(
+--   MODEL `cove_analytics.gemini_flash`,
+--   (
+--     SELECT
+--       CONCAT(
+--         'Write a two-sentence merchandising note for a floor associate about ',
+--         name,
+--         '. Category: ', category,
+--         '. Price: $', CAST(price AS STRING),
+--         '. Mention who it is for. Do not invent materials or features that are not implied by the name and category.'
+--       ) AS prompt,
+--       product_id,
+--       name
+--     FROM `cove_analytics.products`
+--   ),
+--   STRUCT(0.2 AS temperature, 256 AS max_output_tokens)
+-- );
+
+-- One-line read of each customer's recent mix. Uses the same remote model.
+-- SELECT
+--   customer_id,
+--   result AS note
+-- FROM AI.GENERATE_TEXT(
+--   MODEL `cove_analytics.gemini_flash`,
+--   (
+--     SELECT
+--       c.customer_id,
+--       CONCAT(
+--         'In one sentence, describe what ', c.full_name,
+--         ' bought. Orders: ',
+--         STRING_AGG(DISTINCT p.name, ', ')
+--       ) AS prompt
+--     FROM `cove_analytics.customers` AS c
+--     JOIN `cove_analytics.orders` AS o
+--       ON o.customer_id = c.customer_id
+--     JOIN `cove_analytics.order_items` AS i
+--       ON i.order_id = o.order_id
+--     JOIN `cove_analytics.products` AS p
+--       ON p.product_id = i.product_id
+--     GROUP BY c.customer_id, c.full_name
+--   ),
+--   STRUCT(0.2 AS temperature, 128 AS max_output_tokens)
+-- );

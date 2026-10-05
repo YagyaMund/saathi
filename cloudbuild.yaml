@@ -1,0 +1,26 @@
+# Build and push the Cove Supply image. Terraform deploys Cloud Run.
+# The Artifact Registry repository (cove) must exist first:
+#   terraform apply -var="project_id=PROJECT" -var="enable_cloud_run=false"
+#   gcloud builds submit --config cloudbuild.yaml --substitutions=_REGION=us-central1
+#   terraform apply -var="project_id=PROJECT"
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/cove/app:$SHORT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/cove/app:latest
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/cove/app
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/cove/app:$SHORT_SHA
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/cove/app:latest
+substitutions:
+  _REGION: us-central1
+options:
+  logging: CLOUD_LOGGING_ONLY

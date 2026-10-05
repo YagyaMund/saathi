@@ -1,0 +1,10 @@
+[
+  { "name": "order_id", "type": "STRING", "mode": "REQUIRED" },
+  { "name": "customer_id", "type": "STRING", "mode": "REQUIRED" },
+  { "name": "ordered_at", "type": "TIMESTAMP", "mode": "REQUIRED" },
+  { "name": "status", "type": "STRING", "mode": "NULLABLE" },
+  { "name": "channel", "type": "STRING", "mode": "NULLABLE" },
+  { "name": "subtotal", "type": "NUMERIC", "mode": "NULLABLE" },
+  { "name": "shipping", "type": "NUMERIC", "mode": "NULLABLE" },
+  { "name": "total", "type": "NUMERIC", "mode": "NULLABLE" }
+]
