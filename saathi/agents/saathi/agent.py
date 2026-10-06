@@ -1,4 +1,4 @@
-"""ADK agents for Saathi. Run locally with a Gemini API key. Agent Runtime stays off."""
+"""ADK agents for Saathi. Deployed to Agent Runtime in project saathi-510820."""
 
 from __future__ import annotations
 
