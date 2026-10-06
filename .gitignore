@@ -34,6 +34,17 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!saathi/.env.example
+
+# saathi local sheet stand-in
+saathi/data/products.json
+saathi/data/products.csv
+saathi/data/media/*
+!saathi/data/media/.gitkeep
+saathi/.venv
+*.egg-info/
+__pycache__/
+.pytest_cache/
 
 # terraform
 .terraform/

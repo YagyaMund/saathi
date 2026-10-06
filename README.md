@@ -2,6 +2,8 @@
 
 A product-discovery commerce demo for the Google AI Builder Cup. The shop is a twelve-piece coast-and-trail catalog. Locally it runs on fixtures. With a Google Cloud project, the same app calls Gemini on Vertex AI, Vertex AI Search, Cloud Storage, and either Cloud SQL for PostgreSQL or AlloyDB.
 
+**Saathi**, the AI salesperson for a one-person shop, is a separate demo in [`saathi/`](saathi/README.md). Google Chat, English and Hindi, project `saathi-510820`.
+
 Analytics live in BigQuery. LookML for revenue, repeat customers, and top products is in `looker/`. This repo does not provision a Looker (Looker Core) instance.
 
 ## Run locally

@@ -1,0 +1,25 @@
+[project]
+name = "saathi"
+version = "0.1.0"
+description = "Saathi, an AI salesperson for a one-person shop. Google Chat demo in English and Hindi."
+requires-python = ">=3.11"
+dependencies = [
+  "google-adk>=2.11,<3",
+  "pillow>=10",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+saathi = "saathi.server:main"
+
+[tool.setuptools.packages.find]
+where = ["agents"]
+
+[tool.setuptools.package-data]
+saathi = ["static/*", "static/samples/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["agents"]

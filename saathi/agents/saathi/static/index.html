@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Saathi · Google Chat</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1c1915;
+      --muted: #5e564c;
+      --paper: #f3ecdf;
+      --card: #fffdf9;
+      --line: #e3d7c6;
+      --red: #8f2d2a;
+      --red-deep: #6e221f;
+      --chat: #f7f9fc;
+      --mine: #d3e3fd;
+      --mine-ink: #0b2548;
+      --green: #0d652d;
+      --sheet: #e8f5ec;
+      --danger: #8f2d2a;
+      --shadow: 0 16px 40px rgba(58, 36, 18, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Noto Sans", "Noto Sans Devanagari", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 400px at 10% -10%, #f7e4d4, transparent 50%),
+        var(--paper);
+      overflow-x: hidden;
+    }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 16px 28px;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    header.top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; gap: 12px; align-items: center; }
+    .mark {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: var(--red); color: #f6efe4;
+      display: grid; place-items: center;
+      font-family: Fraunces, "Iowan Old Style", serif;
+      font-size: 22px;
+    }
+    h1 {
+      font-family: Fraunces, "Iowan Old Style", serif;
+      font-size: 32px; line-height: 1; margin: 0; font-weight: 560;
+    }
+    .sub { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .pill {
+      border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 600;
+      background: #fff; border: 1px solid var(--line); color: var(--ink);
+    }
+    .pill.chat { background: #e8f0fe; border-color: #c6dafc; color: #174ea6; }
+    .pill.live { background: var(--sheet); border-color: #b7dfc2; color: var(--green); }
+    .pill.wait { background: #fff6e8; border-color: #f0ddb8; color: #7a4e00; }
+    .note {
+      margin: 0; color: var(--muted); font-size: 13.5px; max-width: 70ch;
+    }
+    .staff { display: flex; gap: 6px; flex-wrap: wrap; }
+    .job {
+      font-size: 12px; padding: 4px 8px; border-radius: 999px;
+      background: #fff; border: 1px solid var(--line);
+    }
+    .job.on { background: var(--sheet); border-color: #b7dfc2; color: var(--green); }
+    .job.off { color: var(--muted); }
+    .layout {
+      flex: 1; min-height: 0;
+      display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 14px;
+    }
+    .panel {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: var(--shadow); min-width: 0;
+      display: flex; flex-direction: column; min-height: 560px;
+    }
+    .panel head, .panel-h {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--line);
+    }
+    .panel-h h2 { margin: 0; font-size: 15px; font-weight: 700; }
+    .panel-h p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+    .thread {
+      flex: 1; overflow: auto; padding: 16px; background: var(--chat);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .bubble { max-width: min(92%, 460px); display: flex; flex-direction: column; gap: 6px; }
+    .bubble.saathi { align-self: flex-start; }
+    .bubble.seller { align-self: flex-end; }
+    .who { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    .bubble.seller .who { text-align: right; }
+    .text {
+      margin: 0; white-space: pre-wrap; line-height: 1.45; font-size: 15px;
+      padding: 10px 12px; border-radius: 14px;
+    }
+    .bubble.saathi .text { background: #fff; border: 1px solid #e6eaf0; }
+    .bubble.seller .text { background: var(--mine); color: var(--mine-ink); }
+    .bubble img.shot {
+      width: min(100%, 220px); border-radius: 12px; display: block;
+      border: 1px solid var(--line);
+    }
+    .bubble.seller img.shot { align-self: flex-end; }
+    .card {
+      background: #fff; border: 1px solid #e6eaf0; border-radius: 12px; overflow: hidden;
+    }
+    .card header { padding: 10px 12px; border-bottom: 1px solid #eef1f5; }
+    .card header strong { display: block; font-size: 14px; }
+    .card header span { color: var(--muted); font-size: 12px; }
+    .card dl { margin: 0; padding: 8px 12px 10px; }
+    .card dt { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .card dd { margin: 0; font-size: 14px; }
+    form.composer {
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 12px; border-top: 1px solid var(--line); background: #fff;
+      border-radius: 0 0 18px 18px;
+    }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    button.chip, button.ghost, button.send {
+      font: inherit; cursor: pointer;
+    }
+    button.chip {
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+      border-radius: 999px; padding: 6px 10px; font-size: 13px;
+    }
+    button.chip:hover { border-color: #c9b59a; }
+    .row { display: flex; gap: 8px; align-items: flex-end; }
+    textarea {
+      flex: 1; resize: none; min-height: 46px; max-height: 120px;
+      border-radius: 12px; border: 1px solid var(--line); padding: 10px 12px;
+      font: inherit; font-size: 15px; background: #fff;
+    }
+    textarea:focus { outline: 2px solid #c6dafc; border-color: #8ab4f8; }
+    button.send {
+      background: var(--red); color: #fff; border: 0; border-radius: 12px;
+      padding: 12px 16px; font-weight: 700;
+    }
+    button.send:disabled { opacity: 0.55; cursor: progress; }
+    .tools { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .file { font-size: 13px; color: var(--muted); }
+    button.ghost {
+      border: 0; background: transparent; color: var(--muted); font-size: 13px; padding: 0;
+    }
+    .alert {
+      display: none; margin: 0 12px 8px; padding: 8px 10px; border-radius: 10px;
+      background: #fdecea; color: var(--danger); font-size: 13px;
+    }
+    .alert.show { display: block; }
+    .sheet-body { padding: 12px 14px 16px; overflow: auto; }
+    .pending {
+      display: none; margin-bottom: 10px; padding: 8px 10px; border-radius: 10px;
+      background: #fff6e8; color: #7a4e00; font-size: 13px;
+    }
+    .pending.show { display: block; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .empty { color: var(--muted); margin: 8px 0; line-height: 1.45; }
+    .cards-only { display: none; }
+    a.photo { color: var(--green); font-weight: 600; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel { min-height: 0; }
+      .thread { max-height: 62vh; }
+      table { display: none; }
+      .cards-only { display: grid; gap: 8px; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <div class="brand">
+          <div class="mark" aria-hidden="true">स</div>
+          <div>
+            <h1>Saathi</h1>
+            <p class="sub" id="account-line">Google Chat · साथी</p>
+          </div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="pill chat">Google Chat</span>
+        <span class="pill" id="gemini-pill">Checking Gemini…</span>
+        <span class="pill" id="project-pill">saathi-510820</span>
+      </div>
+    </header>
+    <p class="note" id="mode-note"></p>
+    <div class="staff" id="staff"></div>
+    <div class="layout">
+      <section class="panel" aria-label="Google Chat with Saathi">
+        <div class="panel-h">
+          <div>
+            <h2>Chat</h2>
+            <p>Direct message · English and Hindi</p>
+          </div>
+        </div>
+        <div class="thread" id="thread" aria-live="polite"></div>
+        <p class="alert" id="alert" role="alert"></p>
+        <form class="composer" id="composer">
+          <div class="chips" id="chips"></div>
+          <div class="row">
+            <label class="sr" for="text" style="position:absolute;left:-999px">Message to Saathi</label>
+            <textarea id="text" name="text" rows="2" placeholder="Describe the piece, or attach a photo"></textarea>
+            <button class="send" id="send" type="submit">Send</button>
+          </div>
+          <div class="tools">
+            <label class="file">Photo or voice note
+              <input id="file" name="file" type="file" accept="image/*,audio/*" />
+            </label>
+            <button class="ghost" id="clear-file" type="button">Remove file</button>
+          </div>
+        </form>
+      </section>
+      <section class="panel" aria-label="Products sheet">
+        <div class="panel-h">
+          <div>
+            <h2>Products</h2>
+            <p id="sheet-caption">Her sheet · local until OAuth</p>
+          </div>
+          <button class="ghost" id="clear-sheet" type="button">Clear local sheet</button>
+        </div>
+        <div class="sheet-body">
+          <p class="pending" id="pending"></p>
+          <p class="empty" id="empty">No rows yet. The first piece you describe becomes P-0001.</p>
+          <table id="table">
+            <thead>
+              <tr>
+                <th>SKU</th><th>Title</th><th>Cloth</th><th>Colour</th>
+                <th class="num">Price</th><th class="num">Stock</th><th>Photo</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <div class="cards-only" id="mobile-rows"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script>
+    const thread = document.querySelector("#thread");
+    const form = document.querySelector("#composer");
+    const text = document.querySelector("#text");
+    const fileInput = document.querySelector("#file");
+    const send = document.querySelector("#send");
+    const alertBox = document.querySelector("#alert");
+    const pending = document.querySelector("#pending");
+    const empty = document.querySelector("#empty");
+    const rows = document.querySelector("#rows");
+    const mobileRows = document.querySelector("#mobile-rows");
+    const table = document.querySelector("#table");
+    let language = "en";
+    let busy = false;
+
+    function inr(value) {
+      return "₹" + Number(value).toLocaleString("en-IN");
+    }
+
+    function addBubble(role, message, imageUrl) {
+      const item = document.createElement("article");
+      item.className = "bubble " + role;
+      const who = document.createElement("div");
+      who.className = "who";
+      who.textContent = role === "seller" ? "You" : "Saathi";
+      item.appendChild(who);
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.className = "shot";
+        img.alt = "Photo sent with this message";
+        img.src = imageUrl;
+        item.appendChild(img);
+      }
+      if (message) {
+        const p = document.createElement("p");
+        p.className = "text";
+        p.textContent = message;
+        item.appendChild(p);
+      }
+      thread.appendChild(item);
+      thread.scrollTop = thread.scrollHeight;
+      return item;
+    }
+
+    function addCards(parent, cards) {
+      (cards || []).forEach((entry) => {
+        const card = entry.card || {};
+        const box = document.createElement("section");
+        box.className = "card";
+        const header = document.createElement("header");
+        const title = document.createElement("strong");
+        title.textContent = (card.header && card.header.title) || "Saathi";
+        const sub = document.createElement("span");
+        sub.textContent = (card.header && card.header.subtitle) || "";
+        header.append(title, sub);
+        box.appendChild(header);
+        const list = document.createElement("dl");
+        ((card.sections || [])[0]?.widgets || []).forEach((widget) => {
+          const row = widget.decoratedText;
+          if (!row) return;
+          const dt = document.createElement("dt");
+          dt.textContent = row.topLabel || "";
+          const dd = document.createElement("dd");
+          dd.textContent = row.text || "";
+          list.append(dt, dd);
+        });
+        box.appendChild(list);
+        parent.appendChild(box);
+      });
+    }
+
+    function renderSheet(sheetRows) {
+      rows.replaceChildren();
+      mobileRows.replaceChildren();
+      const has = sheetRows && sheetRows.length;
+      empty.hidden = !!has;
+      table.hidden = !has;
+      (sheetRows || []).forEach((row) => {
+        const tr = document.createElement("tr");
+        const cells = [
+          row.sku, row.title, row.fabric, row.colour,
+          inr(row.price_inr), String(row.stock), row.photo_note || "—"
+        ];
+        cells.forEach((value, index) => {
+          const td = document.createElement("td");
+          if (index === 4 || index === 5) td.className = "num";
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        if (row.photo_link) {
+          const link = document.createElement("a");
+          link.className = "photo";
+          link.href = row.photo_link;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = " Open photo";
+          tr.lastElementChild.appendChild(link);
+        }
+        rows.appendChild(tr);
+
+        const card = document.createElement("article");
+        card.className = "card";
+        const header = document.createElement("header");
+        const strong = document.createElement("strong");
+        strong.textContent = row.sku + " · " + row.title;
+        const span = document.createElement("span");
+        span.textContent = inr(row.price_inr) + " · " + row.stock;
+        header.append(strong, span);
+        const body = document.createElement("p");
+        body.className = "text";
+        body.textContent = [row.fabric, row.colour, row.photo_note].filter(Boolean).join(" · ");
+        card.append(header, body);
+        mobileRows.appendChild(card);
+      });
+    }
+
+    function showPending(info) {
+      if (!info) {
+        pending.classList.remove("show");
+        pending.textContent = "";
+        return;
+      }
+      const labels = {
+        en: { title: "a name", fabric: "the cloth", colour: "the colour", price_inr: "the price", stock: "the stock count" },
+        hi: { title: "नाम", fabric: "कपड़ा", colour: "रंग", price_inr: "कीमत", stock: "पीस" }
+      };
+      const lang = info.language === "hi" ? "hi" : "en";
+      const field = (labels[lang] && labels[lang][info.field]) || info.field;
+      pending.textContent = lang === "hi"
+        ? "एक लिस्टिंग खुली है। " + field + " का जवाब चैट में दीजिए।"
+        : "One listing is open. Answer with " + field + " in the chat.";
+      pending.classList.add("show");
+    }
+
+    function paintStatus(status) {
+      document.querySelector("#project-pill").textContent = status.projectId;
+      document.querySelector("#account-line").textContent =
+        "Google Chat · " + status.workspaceAccount;
+      const pill = document.querySelector("#gemini-pill");
+      const note = document.querySelector("#mode-note");
+      if (status.gemini) {
+        pill.textContent = "Gemini Flash";
+        pill.className = "pill live";
+        note.textContent = "Photos and voice notes go to Gemini. Price and stock still have to be in your words. The chat is not saved.";
+      } else {
+        pill.textContent = "Gemini key not set";
+        pill.className = "pill wait";
+        note.textContent = "Listings are read from the words you type. Put GEMINI_API_KEY in saathi/.env when you want Gemini to see photos and hear voice notes. Create that key in project saathi-510820, and do not paste it into chat.";
+      }
+      const staff = document.querySelector("#staff");
+      staff.replaceChildren();
+      const names = {
+        cataloguer: "Cataloguer", photo_coach: "Photo coach", scribe: "Scribe",
+        salesperson: "Salesperson", negotiator: "Negotiator", stock_keeper: "Stock keeper",
+        order_taker: "Order taker", payment_checker: "Payment checker",
+        shift_manager: "Shift manager", shop_analyst: "Shop analyst"
+      };
+      Object.entries(status.staff || {}).forEach(([job, on]) => {
+        const chip = document.createElement("span");
+        chip.className = "job " + (on ? "on" : "off");
+        chip.textContent = (names[job] || job) + (on ? " · on" : " · off");
+        staff.appendChild(chip);
+      });
+      document.querySelector("#sheet-caption").textContent = status.sheet === "google"
+        ? "Her Google Sheet"
+        : "Her Products tab · local until the Sheet is connected";
+    }
+
+    async function boot() {
+      const [statusRes, sheetRes, sampleRes] = await Promise.all([
+        fetch("/api/status"), fetch("/api/sheet"), fetch("/api/samples")
+      ]);
+      if (!statusRes.ok) throw new Error("status");
+      const status = await statusRes.json();
+      paintStatus(status);
+      addBubble("saathi", status.intro);
+      const sheet = await sheetRes.json();
+      renderSheet(sheet.rows);
+      showPending(sheet.pending);
+      const samples = await sampleRes.json();
+      const chips = document.querySelector("#chips");
+      (samples.samples || []).forEach((sample) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chip";
+        button.textContent = sample.label;
+        button.addEventListener("click", () => submitText(sample.text, sample.sampleImage));
+        chips.appendChild(button);
+      });
+    }
+
+    function fail(message) {
+      alertBox.textContent = message;
+      alertBox.classList.add("show");
+    }
+
+    async function submitText(message, sampleImage) {
+      if (busy) return;
+      const chosen = fileInput.files && fileInput.files[0];
+      if (!message.trim() && !chosen && !sampleImage) {
+        fail("Write the piece, or attach a photo.");
+        return;
+      }
+      alertBox.classList.remove("show");
+      busy = true;
+      send.disabled = true;
+      let preview = null;
+      if (chosen && chosen.type.startsWith("image/")) preview = URL.createObjectURL(chosen);
+      else if (sampleImage) preview = "/samples/" + sampleImage + ".png";
+      addBubble("seller", message, preview);
+      const waiting = addBubble("saathi", language === "hi" ? "लिख रही हूँ…" : "Writing…");
+      try {
+        const body = new FormData();
+        body.set("text", message);
+        if (sampleImage) body.set("sampleImage", sampleImage);
+        if (chosen) body.set("file", chosen);
+        const response = await fetch("/api/message", { method: "POST", body });
+        const payload = await response.json();
+        waiting.remove();
+        if (!response.ok) {
+          fail(payload.error || "The message did not go through. The sheet was left as it was.");
+          return;
+        }
+        language = payload.language || language;
+        document.documentElement.lang = language;
+        text.placeholder = language === "hi"
+          ? "पीस के बारे में बताइए, या फोटो भेजिए"
+          : "Describe the piece, or attach a photo";
+        const bubble = addBubble("saathi", payload.message && payload.message.text);
+        addCards(bubble, payload.message && payload.message.cardsV2);
+        renderSheet(payload.sheet || []);
+        showPending(payload.pending);
+        text.value = "";
+        fileInput.value = "";
+      } catch (error) {
+        waiting.remove();
+        fail("Saathi could not be reached. The sheet was left as it was.");
+      } finally {
+        busy = false;
+        send.disabled = false;
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitText(text.value, null);
+    });
+    text.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+    document.querySelector("#clear-file").addEventListener("click", () => {
+      fileInput.value = "";
+    });
+    document.querySelector("#clear-sheet").addEventListener("click", async () => {
+      const response = await fetch("/api/sheet/clear", { method: "POST" });
+      if (!response.ok) {
+        fail("The local sheet could not be cleared.");
+        return;
+      }
+      const payload = await response.json();
+      renderSheet(payload.rows);
+      showPending(null);
+      addBubble("saathi", "Local Products sheet cleared.");
+    });
+
+    boot().catch(() => fail("Saathi did not load. Refresh the page."));
+  </script>
+</body>
+</html>

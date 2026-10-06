@@ -1,0 +1,23 @@
+{
+  "sellerId": "saathi-demo",
+  "projectId": "saathi-510820",
+  "workspaceAccount": "mundrayagya1@gmail.com",
+  "spreadsheetId": "",
+  "driveFolderId": "",
+  "model": "gemini-2.5-flash",
+  "keySecretName": "seller-saathi-demo-gemini",
+  "languages": ["en", "hi"],
+  "floorPriceRule": null,
+  "staff": {
+    "cataloguer": true,
+    "photo_coach": true,
+    "salesperson": false,
+    "negotiator": false,
+    "stock_keeper": false,
+    "order_taker": false,
+    "payment_checker": false,
+    "scribe": true,
+    "shift_manager": false,
+    "shop_analyst": false
+  }
+}
