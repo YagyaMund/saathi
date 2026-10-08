@@ -1,11 +1,11 @@
 import { AppShell } from "@/components/app-shell";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export default async function NewItemPage() {
-  const session = await getSession();
+  const session = await requireSession();
   const needsCount = await prisma.conversation.count({
-    where: { shopId: session!.shopId, needsSeller: true },
+    where: { shopId: session.shopId, needsSeller: true },
   });
 
   return (

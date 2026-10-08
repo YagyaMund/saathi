@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("sunita@saathi.demo");
   const [password, setPassword] = useState("sunita123");
   const [error, setError] = useState("");
@@ -18,6 +16,7 @@ export default function LoginPage() {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
@@ -26,8 +25,7 @@ export default function LoginPage() {
       setError(data.error || "Could not sign in");
       return;
     }
-    router.push("/app");
-    router.refresh();
+    window.location.assign("/app");
   }
 
   async function googleStub() {
@@ -36,6 +34,7 @@ export default function LoginPage() {
     const res = await fetch("/api/auth/google-stub", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({
         email: "sunita.handicrafts@gmail.com",
         name: "Sunita Deshmukh",
@@ -49,8 +48,7 @@ export default function LoginPage() {
       setError(data.error || "Google stub failed");
       return;
     }
-    router.push("/app");
-    router.refresh();
+    window.location.assign("/app");
   }
 
   return (

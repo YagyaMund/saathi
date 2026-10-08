@@ -2,14 +2,14 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Chevron } from "@/components/icons";
 import { Thumb } from "@/components/thumb";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { inr } from "@/lib/money";
 import { getShopBundle } from "@/lib/shop-data";
 import { PdfButton } from "./pdf-button";
 
 export default async function ItemsPage() {
-  const session = await getSession();
-  const data = await getShopBundle(session!.shopId);
+  const session = await requireSession();
+  const data = await getShopBundle(session.shopId);
 
   return (
     <AppShell

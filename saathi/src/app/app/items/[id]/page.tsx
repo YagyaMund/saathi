@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Thumb } from "@/components/thumb";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { inr } from "@/lib/money";
 
@@ -10,21 +10,21 @@ export default async function ItemPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getSession();
+  const session = await requireSession();
   const { id } = await params;
   const item = await prisma.item.findFirst({
-    where: { id, shopId: session!.shopId },
+    where: { id, shopId: session.shopId },
     include: { variants: true },
   });
   if (!item) notFound();
   const stock = item.variants.reduce((a, v) => a + v.stock, 0);
   const asks = await prisma.unmetAsk.findMany({
-    where: { shopId: session!.shopId },
+    where: { shopId: session.shopId },
     orderBy: { count: "desc" },
     take: 2,
   });
   const needsCount = await prisma.conversation.count({
-    where: { shopId: session!.shopId, needsSeller: true },
+    where: { shopId: session.shopId, needsSeller: true },
   });
 
   return (

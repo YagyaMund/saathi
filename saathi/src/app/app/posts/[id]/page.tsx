@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Thumb } from "@/components/thumb";
 
@@ -10,10 +10,10 @@ export default async function PostDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getSession();
+  const session = await requireSession();
   const { id } = await params;
   const post = await prisma.igPost.findFirst({
-    where: { id, shopId: session!.shopId },
+    where: { id, shopId: session.shopId },
     include: { drafts: true },
   });
   if (!post) notFound();
@@ -23,7 +23,7 @@ export default async function PostDetailPage({
     body: string;
   }[];
   const needsCount = await prisma.conversation.count({
-    where: { shopId: session!.shopId, needsSeller: true },
+    where: { shopId: session.shopId, needsSeller: true },
   });
 
   return (

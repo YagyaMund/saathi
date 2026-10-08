@@ -14,7 +14,7 @@ npm run db:seed
 npm run dev
 ```
 
-Open [http://127.0.0.1:4731](http://127.0.0.1:4731).
+Open [http://127.0.0.1:4747](http://127.0.0.1:4747).
 
 | Login | Password |
 | --- | --- |

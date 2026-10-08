@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Chevron } from "@/components/icons";
 import { Thumb } from "@/components/thumb";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { inr } from "@/lib/money";
 import { getShopBundle } from "@/lib/shop-data";
 
@@ -14,8 +14,8 @@ function relative(d: Date) {
 }
 
 export default async function HomePage() {
-  const session = await getSession();
-  const data = await getShopBundle(session!.shopId);
+  const session = await requireSession();
+  const data = await getShopBundle(session.shopId);
   const { shop, posts, orders, pendingDrafts, conversations, needsCount } = data;
   const snap = shop.analyticsSnap;
   const urgent = conversations.find((c) => c.needsSeller);

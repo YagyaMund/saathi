@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { getConversation } from "@/lib/shop-data";
 import { prisma } from "@/lib/db";
 import { ThreadClient } from "./ui";
@@ -10,12 +10,12 @@ export default async function ThreadPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getSession();
+  const session = await requireSession();
   const { id } = await params;
-  const conversation = await getConversation(session!.shopId, id);
+  const conversation = await getConversation(session.shopId, id);
   if (!conversation) notFound();
   const needsCount = await prisma.conversation.count({
-    where: { shopId: session!.shopId, needsSeller: true },
+    where: { shopId: session.shopId, needsSeller: true },
   });
 
   return (
