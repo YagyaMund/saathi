@@ -76,7 +76,14 @@ Set `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` in `.env` when ready
 
 ## Database
 
-SQLite via Prisma (`prisma/dev.db`). Holds shops, users, drafts, approvals, agent flags, Instagram sim state, conversations, unmet asks, analytics, PDF jobs. Approved catalogue rows also mirror into `SheetRow` (Products tab fixture).
+Postgres via Prisma (`DATABASE_URL`). Use Neon, Vercel Postgres, or any Postgres 14+. Holds shops, users, drafts, approvals, agent flags, Instagram sim state, conversations, unmet asks, analytics, PDF jobs. Approved catalogue rows also mirror into `SheetRow` (Products tab fixture).
+
+## Deploy (Vercel)
+
+- GitHub: https://github.com/YagyaMund/saathi  
+- Vercel project **Root Directory**: `saathi`  
+- Env: `DATABASE_URL` (Postgres), `AUTH_SECRET`, optional `GEMINI_API_KEY`, `GOOGLE_CLOUD_PROJECT=saathi-510820`  
+- Build runs `prisma migrate deploy`. Seed once after first deploy: `npm run db:seed` with production `DATABASE_URL`.
 
 ## Deploy agents to Agent Runtime
 
