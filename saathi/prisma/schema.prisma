@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String?
+  googleSub    String?  @unique
+  createdAt    DateTime @default(now())
+  memberships  ShopMember[]
+}
+
+model Shop {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  sellerName       String
+  city             String
+  instagramHandle  String?
+  sellerLanguage   String   @default("hi")
+  buyerLanguages   String   @default("hi,en")
+  categories       String   @default("[]")
+  variantAxes      String   @default("{}")
+  upiId            String?
+  googleConnected  Boolean  @default(false)
+  googleEmail      String?
+  spreadsheetId    String?
+  instagramSim     Boolean  @default(true)
+  instagramFollowers Int    @default(0)
+  agentFlags       String   @default("{}")
+  createdAt        DateTime @default(now())
+  members          ShopMember[]
+  items            Item[]
+  drafts           Draft[]
+  posts            IgPost[]
+  conversations    Conversation[]
+  orders           Order[]
+  unmetAsks        UnmetAsk[]
+  approvals        Approval[]
+  analyticsSnap    AnalyticsSnap?
+  eveningReports   EveningReport[]
+  pdfJobs          PdfJob[]
+}
+
+model ShopMember {
+  id     String @id @default(cuid())
+  shopId String
+  userId String
+  role   String @default("owner")
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, userId])
+}
+
+model Item {
+  id          String    @id @default(cuid())
+  shopId      String
+  sku         String
+  name        String
+  category    String
+  description String    @default("")
+  attributes  String    @default("{}")
+  priceInr    Int
+  floorInr    Int
+  thumbTone   String    @default("pottery")
+  sourcePostId String?
+  approvedAt  DateTime?
+  soldCount   Int       @default(0)
+  usualPrice  Int?
+  status      String    @default("live")
+  shop        Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  variants    Variant[]
+  orderItems  OrderItem[]
+
+  @@unique([shopId, sku])
+}
+
+model Variant {
+  id      String @id @default(cuid())
+  itemId  String
+  sku     String
+  label   String
+  stock   Int    @default(0)
+  item    Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, sku])
+}
+
+model IgPost {
+  id          String   @id @default(cuid())
+  shopId      String
+  permalink   String
+  caption     String
+  postedAt    DateTime
+  photoCount  Int      @default(1)
+  thumbTone   String   @default("pottery")
+  postType    String   @default("product")
+  statusLabel String   @default("")
+  warnLabel   String?
+  reviewJson  String   @default("[]")
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  drafts      Draft[]
+  comments    IgComment[]
+}
+
+model Draft {
+  id           String   @id @default(cuid())
+  shopId       String
+  postId       String?
+  draftKey     String
+  name         String
+  category     String
+  description  String   @default("")
+  attributes   String   @default("{}")
+  priceInr     Int?
+  stock        Int?
+  sizesText    String?
+  thumbTone    String   @default("pottery")
+  missing      String   @default("[]")
+  status       String   @default("pending")
+  skipReason   String?
+  imageIndex   Int      @default(0)
+  createdAt    DateTime @default(now())
+  shop         Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  post         IgPost?  @relation(fields: [postId], references: [id])
+  approval     Approval?
+}
+
+model Approval {
+  id         String   @id @default(cuid())
+  shopId     String
+  draftId    String   @unique
+  approvedBy String
+  priceInr   Int
+  stockJson  String
+  createdAt  DateTime @default(now())
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  draft      Draft    @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  shopId        String
+  buyerName     String
+  channel       String    @default("dm")
+  needsSeller   Boolean   @default(false)
+  chip          String?
+  chipTone      String    @default("neutral")
+  lastPreview   String    @default("")
+  lastAt        DateTime  @default(now())
+  windowHoursLeft Float?
+  handledBySaathi Boolean @default(false)
+  shop          Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  messages      Message[]
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  sender         String
+  body           String
+  kind           String   @default("text")
+  createdAt      DateTime @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model IgComment {
+  id        String   @id @default(cuid())
+  postId    String
+  author    String
+  body      String
+  createdAt DateTime @default(now())
+  post      IgPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  shopId       String
+  buyerName    String
+  status       String
+  totalInr     Int
+  paidInr      Int?
+  paymentNote  String?
+  createdAt    DateTime @default(now())
+  shop         Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id       String @id @default(cuid())
+  orderId  String
+  itemId   String?
+  name     String
+  priceInr Int
+  qty      Int    @default(1)
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item     Item?  @relation(fields: [itemId], references: [id])
+}
+
+model UnmetAsk {
+  id        String @id @default(cuid())
+  shopId    String
+  label     String
+  count     Int    @default(1)
+  shop      Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model AnalyticsSnap {
+  id           String @id @default(cuid())
+  shopId       String @unique
+  weekPeople   Int
+  weekOrders   Int
+  weekEarned   Int
+  todayOrders  Int
+  todayEarned  Int
+  todayMessages Int
+  dropoffsJson String @default("[]")
+  shop         Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model EveningReport {
+  id        String   @id @default(cuid())
+  shopId    String
+  body      String
+  createdAt DateTime @default(now())
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model PdfJob {
+  id        String   @id @default(cuid())
+  shopId    String
+  status    String   @default("ready")
+  filePath  String?
+  createdAt DateTime @default(now())
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model SheetRow {
+  id        String   @id @default(cuid())
+  shopId    String
+  tab       String
+  payload   String
+  createdAt DateTime @default(now())
+}

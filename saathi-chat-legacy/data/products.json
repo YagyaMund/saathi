@@ -1,0 +1,41 @@
+[
+  {
+    "sku": "P-0001",
+    "title": "Blue cotton saree",
+    "category": "Saree",
+    "fabric": "cotton",
+    "colour": "Blue",
+    "price_inr": 1400,
+    "stock": 2,
+    "photo_link": "",
+    "photo_note": "",
+    "language": "en",
+    "written_at": "2026-10-06T20:32:15Z"
+  },
+  {
+    "sku": "P-0002",
+    "title": "लाल कांजीवरम सिल्क साड़ी",
+    "category": "साड़ी",
+    "fabric": "कांजीवरम सिल्क",
+    "colour": "लाल",
+    "price_inr": 1400,
+    "stock": 3,
+    "photo_link": "",
+    "photo_note": "",
+    "language": "hi",
+    "written_at": "2026-10-06T20:32:16Z"
+  },
+  {
+    "sku": "P-0003",
+    "title": "Maroon cotton saree",
+    "category": "Saree",
+    "fabric": "cotton",
+    "colour": "Maroon",
+    "price_inr": 900,
+    "stock": 4,
+    "photo_link": "/media/P-0003.jpg",
+    "photo_note": "The photo is dark. Shoot it toward a window. The photo is too small or cropped. Step back so the whole piece is in the frame.",
+    "language": "en",
+    "written_at": "2026-10-06T20:32:17Z"
+  }
+]

@@ -2,7 +2,7 @@
 
 A product-discovery commerce demo for the Google AI Builder Cup. The shop is a twelve-piece coast-and-trail catalog. Locally it runs on fixtures. With a Google Cloud project, the same app calls Gemini on Vertex AI, Vertex AI Search, Cloud Storage, and either Cloud SQL for PostgreSQL or AlloyDB.
 
-**Saathi**, the AI salesperson for a one-person shop, is a separate demo in [`saathi/`](saathi/README.md). Google Chat, English and Hindi, project `saathi-510820`.
+**Saathi** is the multi-tenant Instagram seller platform in [`saathi/`](saathi/README.md) (port 4731). Seeded demo: Sunita Handicrafts. Project `saathi-510820`. The earlier Chat ADK slice is archived under `saathi-chat-legacy/`.
 
 Analytics live in BigQuery. LookML for revenue, repeat customers, and top products is in `looker/`. This repo does not provision a Looker (Looker Core) instance.
 
