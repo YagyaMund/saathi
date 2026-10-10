@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/app-shell";
 import { Chevron } from "@/components/icons";
-import { requireSession } from "@/lib/auth";
+import { requireShopSession } from "@/lib/auth";
 import { getShopBundle } from "@/lib/shop-data";
 import { SettingsClient } from "./ui";
 
@@ -17,7 +17,7 @@ const STAFF: { key: string; title: string; sub: string }[] = [
 ];
 
 export default async function SettingsPage() {
-  const session = await requireSession();
+  const session = await requireShopSession();
   const data = await getShopBundle(session.shopId);
   const shop = data.shop;
 

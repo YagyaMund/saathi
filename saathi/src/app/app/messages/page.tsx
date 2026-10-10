@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
-import { requireSession } from "@/lib/auth";
+import { requireShopSession } from "@/lib/auth";
 import { getShopBundle } from "@/lib/shop-data";
 
 function ago(d: Date) {
@@ -11,7 +11,7 @@ function ago(d: Date) {
 }
 
 export default async function MessagesPage() {
-  const session = await requireSession();
+  const session = await requireShopSession();
   const data = await getShopBundle(session.shopId);
   const need = data.conversations.filter((c) => c.needsSeller);
   const handled = data.conversations.filter((c) => !c.needsSeller);

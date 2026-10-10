@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Thumb } from "@/components/thumb";
-import { requireSession } from "@/lib/auth";
+import { requireShopSession } from "@/lib/auth";
 import { inr } from "@/lib/money";
 import { getShopBundle } from "@/lib/shop-data";
 import { AnalystButton } from "./analyst-button";
 
 export default async function AnalyticsPage() {
-  const session = await requireSession();
+  const session = await requireShopSession();
   const data = await getShopBundle(session.shopId);
   const snap = data.shop.analyticsSnap;
   const dropoffs = JSON.parse(snap?.dropoffsJson || "[]") as {

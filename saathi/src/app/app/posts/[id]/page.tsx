@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { requireSession } from "@/lib/auth";
+import { requireShopSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Thumb } from "@/components/thumb";
 
@@ -10,7 +10,7 @@ export default async function PostDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await requireSession();
+  const session = await requireShopSession();
   const { id } = await params;
   const post = await prisma.igPost.findFirst({
     where: { id, shopId: session.shopId },

@@ -1,10 +1,10 @@
 import { AppShell } from "@/components/app-shell";
-import { requireSession } from "@/lib/auth";
+import { requireShopSession } from "@/lib/auth";
 import { getShopBundle } from "@/lib/shop-data";
 import { ApprovalsClient } from "./ui";
 
 export default async function ApprovalsPage() {
-  const session = await requireSession();
+  const session = await requireShopSession();
   const data = await getShopBundle(session.shopId);
   return (
     <AppShell

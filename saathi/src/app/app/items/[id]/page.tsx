@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Thumb } from "@/components/thumb";
-import { requireSession } from "@/lib/auth";
+import { requireShopSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { inr } from "@/lib/money";
 
@@ -10,7 +10,7 @@ export default async function ItemPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await requireSession();
+  const session = await requireShopSession();
   const { id } = await params;
   const item = await prisma.item.findFirst({
     where: { id, shopId: session.shopId },

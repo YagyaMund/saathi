@@ -60,6 +60,34 @@ export async function requireSession(): Promise<Session> {
   return session;
 }
 
+/**
+ * Session whose shopId still exists. Repairs stale JWTs after reseed/DB cutover
+ * by falling back to the user's first membership; otherwise clears cookie → login.
+ */
+export async function requireShopSession(): Promise<Session> {
+  const session = await requireSession();
+  const shop = await prisma.shop.findUnique({
+    where: { id: session.shopId },
+    select: { id: true },
+  });
+  if (shop) return session;
+
+  const membership = await prisma.shopMember.findFirst({
+    where: { userId: session.userId },
+    orderBy: { id: "asc" },
+  });
+  if (membership) {
+    const repaired: Session = { ...session, shopId: membership.shopId };
+    await createSession(repaired);
+    return repaired;
+  }
+
+  await clearSession();
+  const { redirect } = await import("next/navigation");
+  redirect("/login");
+  throw new Error("UNAUTHORIZED");
+}
+
 export async function signupEmail(opts: {
   email: string;
   name: string;
