@@ -1,16 +1,23 @@
 import { NextResponse } from "next/server";
-import { clearSession, createSession, getSession } from "@/lib/auth";
+import {
+  getSession,
+  sessionCookieOptions,
+  SESSION_COOKIE,
+  signSessionToken,
+} from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-/** Repair stale shopId cookies (RSC cannot set cookies — Next.js 15). */
+/** Repair stale shopId cookies (must set cookie on the redirect response). */
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const next = url.searchParams.get("next") || "/app";
-  const dest = new URL(next.startsWith("/") ? next : "/app", url.origin);
+  const safeNext = next.startsWith("/") ? next : "/app";
+  const dest = new URL(safeNext, url.origin);
+  const login = new URL("/login", url.origin);
 
   const session = await getSession();
   if (!session) {
-    return NextResponse.redirect(new URL("/login", url.origin));
+    return NextResponse.redirect(login);
   }
 
   const shop = await prisma.shop.findUnique({
@@ -26,10 +33,17 @@ export async function GET(req: Request) {
     orderBy: { id: "asc" },
   });
   if (!membership) {
-    await clearSession();
-    return NextResponse.redirect(new URL("/login", url.origin));
+    const res = NextResponse.redirect(login);
+    res.cookies.set(SESSION_COOKIE, "", {
+      ...sessionCookieOptions(),
+      maxAge: 0,
+    });
+    return res;
   }
 
-  await createSession({ ...session, shopId: membership.shopId });
-  return NextResponse.redirect(dest);
+  const repaired = { ...session, shopId: membership.shopId };
+  const token = await signSessionToken(repaired);
+  const res = NextResponse.redirect(dest);
+  res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());
+  return res;
 }

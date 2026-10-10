@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 
-const COOKIE = "saathi_session";
+export const SESSION_COOKIE = "saathi_session";
 
 function secret() {
   return new TextEncoder().encode(
@@ -18,29 +18,37 @@ export type Session = {
   shopId: string;
 };
 
-export async function createSession(session: Session) {
-  const token = await new SignJWT(session)
+export function sessionCookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+  };
+}
+
+export async function signSessionToken(session: Session) {
+  return new SignJWT(session)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("14d")
     .sign(secret());
+}
+
+export async function createSession(session: Session) {
+  const token = await signSessionToken(session);
   const jar = await cookies();
-  jar.set(COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
-  });
+  jar.set(SESSION_COOKIE, token, sessionCookieOptions());
 }
 
 export async function clearSession() {
   const jar = await cookies();
-  jar.delete(COOKIE);
+  jar.delete(SESSION_COOKIE);
 }
 
 export async function getSession(): Promise<Session | null> {
   const jar = await cookies();
-  const token = jar.get(COOKIE)?.value;
+  const token = jar.get(SESSION_COOKIE)?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret());
