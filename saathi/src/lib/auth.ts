@@ -61,8 +61,9 @@ export async function requireSession(): Promise<Session> {
 }
 
 /**
- * Session whose shopId still exists. Repairs stale JWTs after reseed/DB cutover
- * by falling back to the user's first membership; otherwise clears cookie → login.
+ * Session whose shopId still exists. Stale JWTs (after reseed/DB cutover) cannot
+ * be rewritten from a Server Component — Next.js 15 forbids cookies().set there —
+ * so we bounce through /api/auth/repair which can set the cookie.
  */
 export async function requireShopSession(): Promise<Session> {
   const session = await requireSession();
@@ -72,19 +73,8 @@ export async function requireShopSession(): Promise<Session> {
   });
   if (shop) return session;
 
-  const membership = await prisma.shopMember.findFirst({
-    where: { userId: session.userId },
-    orderBy: { id: "asc" },
-  });
-  if (membership) {
-    const repaired: Session = { ...session, shopId: membership.shopId };
-    await createSession(repaired);
-    return repaired;
-  }
-
-  await clearSession();
   const { redirect } = await import("next/navigation");
-  redirect("/login");
+  redirect("/api/auth/repair?next=/app");
   throw new Error("UNAUTHORIZED");
 }
 
