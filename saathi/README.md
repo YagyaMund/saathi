@@ -30,20 +30,26 @@ Or **Continue with Google (stub)** on the login page — opens the Sunita demo w
 - **Messages / Thread** — simulated Instagram DMs; answer one line and Saathi carries on
 - **Posts** — simulated Instagram feed + Post Reviewer suggestions (never edits Instagram)
 - **Items** — approved catalogue; **manual** PDF generate → download (never auto on stock change)
-- **Analytics** — unmet asks, drop-offs, bestsellers; run **Shop Analyst** evening report (Gemini or mock)
+- **Analytics** — unmet asks, drop-offs, bestsellers; run **Shop Analyst** evening report (OpenAI or mock)
 - **Settings** — agent toggles, Instagram sim, **stub Google Sheet** connect, switch to Sunita demo
 
-## Gemini (platform key)
+## LLM keys (platform-level, not per-seller)
 
-Saathi uses one platform key for project `saathi-510820`, not per-seller keys.
+**Current provider: OpenAI.** Gemini/Vertex on `saathi-510820` is wired as a fallback for later.
 
 ```bash
-# saathi/.env
-GEMINI_API_KEY=your_key
-GOOGLE_CLOUD_PROJECT=saathi-510820
+# saathi/.env (local)
+OPENAI_API_KEY=sk-...
+# OPENAI_MODEL=gpt-4o-mini
+
+# Later / fallback when OPENAI_API_KEY is unset:
+# GEMINI_API_KEY=...
+# GOOGLE_CLOUD_PROJECT=saathi-510820
 ```
 
-When unset, agents return deterministic mocks so the UI still runs.
+**Production (Vercel):** Project [saathi](https://vercel.com/yagyas-projects-9fce8811/saathi) → **Settings → Environment Variables** → add `OPENAI_API_KEY` for **Production** and **Preview** → redeploy. Do not paste keys into chat.
+
+Precedence in code (`src/lib/gemini.ts`): `OPENAI_API_KEY` → else `GEMINI_API_KEY` → else deterministic mocks.
 
 ## Agents (versioned prompts)
 
@@ -69,7 +75,7 @@ Eleven prompts live in `prompts/`, extracted from the product prompt library:
 | --- | --- | --- |
 | Instagram | Simulated posts / comments / DMs in SQLite | Meta Instagram Graph API — same conversation/post shape |
 | Google Sign-In / Sheet | Stub connect + local `SheetRow` fixture | OAuth client + Sheets API; UI already shows the flow |
-| PDF | Deterministic PDFKit renderer on demand | Same endpoint |
+| PDF | PDFKit in-memory → Postgres bytes (Vercel-safe; no `/var/task` writes) | Optional GCS signed URLs later |
 | TTS evening report | Text stub note | Cloud Text-to-Speech |
 
 Set `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` in `.env` when ready; the Settings Google button is the plug-in point (`/api/settings/google`).
@@ -82,9 +88,9 @@ Postgres via Prisma (`DATABASE_URL`). Use Neon, Vercel Postgres, or any Postgres
 
 - GitHub: https://github.com/YagyaMund/saathi  
 - Vercel project **Root Directory**: `saathi`  
-- Env: `DATABASE_URL` (Postgres), `AUTH_SECRET`, optional `GEMINI_API_KEY`, `GOOGLE_CLOUD_PROJECT=saathi-510820`  
+- Env: `DATABASE_URL` (Postgres), `AUTH_SECRET`, **`OPENAI_API_KEY`** (current LLM), optional later `GEMINI_API_KEY` / `GOOGLE_CLOUD_PROJECT=saathi-510820`  
 - Build runs `prisma migrate deploy`. Seed once after first deploy: `npm run db:seed` with production `DATABASE_URL`.
 
 ## Deploy agents to Agent Runtime
 
-The previous Chat-demo ADK package is in `../saathi-chat-legacy/`. Redeploy the eleven prompt-backed agents against Gemini from this app first; Agent Runtime redeploy can follow once prompts are locked.
+The previous Chat-demo ADK package is in `../saathi-chat-legacy/`. Agents run from this Next.js app against OpenAI now; switch to Gemini/Vertex later by clearing `OPENAI_API_KEY` and setting `GEMINI_API_KEY`.

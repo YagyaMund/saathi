@@ -1,5 +1,3 @@
-import { createWriteStream, mkdirSync } from "fs";
-import path from "path";
 import PDFDocument from "pdfkit";
 import { prisma } from "@/lib/db";
 import { inr } from "@/lib/money";
@@ -16,16 +14,49 @@ export async function generateCataloguePdf(shopId: string): Promise<{
     orderBy: { name: "asc" },
   });
 
-  const dir = path.join(process.cwd(), "data", "pdfs", shopId);
-  mkdirSync(dir, { recursive: true });
   const fileName = `catalogue-${Date.now()}.pdf`;
-  const absPath = path.join(dir, fileName);
-  const relPath = path.join("data", "pdfs", shopId, fileName);
+  const buffer = await renderCataloguePdfBuffer(shop, items);
 
-  await new Promise<void>((resolve, reject) => {
+  // Persist bytes in Postgres — Vercel serverless cannot mkdir under /var/task,
+  // and /tmp does not survive across generate → download invocations.
+  const job = await prisma.pdfJob.create({
+    data: {
+      shopId,
+      status: "ready",
+      filePath: fileName,
+      content: buffer,
+    },
+  });
+
+  return { jobId: job.id, filePath: fileName };
+}
+
+type ShopRow = {
+  name: string;
+  city: string;
+  instagramHandle: string | null;
+};
+
+type ItemRow = {
+  name: string;
+  category: string;
+  description: string;
+  priceInr: number;
+  floorInr: number;
+  variants: { stock: number }[];
+};
+
+function renderCataloguePdfBuffer(
+  shop: ShopRow,
+  items: ItemRow[],
+): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 48, size: "A4" });
-    const stream = createWriteStream(absPath);
-    doc.pipe(stream);
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
     doc.fontSize(22).fillColor("#161815").text(shop.name, { align: "left" });
     doc.moveDown(0.3);
     doc
@@ -66,17 +97,5 @@ export async function generateCataloguePdf(shopId: string): Promise<{
     }
 
     doc.end();
-    stream.on("finish", () => resolve());
-    stream.on("error", reject);
   });
-
-  const job = await prisma.pdfJob.create({
-    data: {
-      shopId,
-      status: "ready",
-      filePath: relPath,
-    },
-  });
-
-  return { jobId: job.id, filePath: relPath };
 }

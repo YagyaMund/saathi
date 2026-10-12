@@ -1,14 +1,25 @@
 import { houseRules, loadAgentPrompt } from "@/lib/prompts";
 
+export type LlmMode = "openai" | "gemini" | "mock";
+
+export function openaiConfigured() {
+  return Boolean(process.env.OPENAI_API_KEY);
+}
+
 export function geminiConfigured() {
   return Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+}
+
+/** Prefer OpenAI when OPENAI_API_KEY is set; else Gemini; else deterministic mocks. */
+export function llmConfigured() {
+  return openaiConfigured() || geminiConfigured();
 }
 
 export async function runAgentPrompt(opts: {
   agentSlug: string;
   sharedContext: string;
   userMessage: string;
-}): Promise<{ text: string; mode: "gemini" | "mock" }> {
+}): Promise<{ text: string; mode: LlmMode }> {
   const instruction = [
     houseRules(),
     "",
@@ -17,10 +28,48 @@ export async function runAgentPrompt(opts: {
     opts.sharedContext,
   ].join("\n");
 
-  if (!geminiConfigured()) {
-    return { text: mockReply(opts.agentSlug, opts.userMessage), mode: "mock" };
+  if (openaiConfigured()) {
+    const text = await runOpenAI(instruction, opts.userMessage);
+    return { text, mode: "openai" };
   }
 
+  if (geminiConfigured()) {
+    const text = await runGemini(instruction, opts.userMessage);
+    return { text, mode: "gemini" };
+  }
+
+  return { text: mockReply(opts.agentSlug, opts.userMessage), mode: "mock" };
+}
+
+async function runOpenAI(system: string, userMessage: string): Promise<string> {
+  const key = process.env.OPENAI_API_KEY!;
+  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.2,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: userMessage },
+      ],
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`OpenAI failed: ${res.status} ${err.slice(0, 200)}`);
+  }
+  const data = (await res.json()) as {
+    choices?: { message?: { content?: string } }[];
+  };
+  return data.choices?.[0]?.message?.content?.trim() || "";
+}
+
+async function runGemini(system: string, userMessage: string): Promise<string> {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY!;
   const model = process.env.SAATHI_MODEL || "gemini-2.5-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
@@ -28,8 +77,8 @@ export async function runAgentPrompt(opts: {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: instruction }] },
-      contents: [{ role: "user", parts: [{ text: opts.userMessage }] }],
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: userMessage }] }],
       generationConfig: { temperature: 0.2 },
     }),
   });
@@ -40,10 +89,10 @@ export async function runAgentPrompt(opts: {
   const data = (await res.json()) as {
     candidates?: { content?: { parts?: { text?: string }[] } }[];
   };
-  const text =
+  return (
     data.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") ||
-    "";
-  return { text, mode: "gemini" };
+    ""
+  );
 }
 
 function mockReply(slug: string, message: string): string {
@@ -76,5 +125,5 @@ function mockReply(slug: string, message: string): string {
       ],
     });
   }
-  return `Saathi (${slug}) mock reply — set GEMINI_API_KEY for live Gemini. You said: ${message.slice(0, 80)}`;
+  return `Saathi (${slug}) mock reply — set OPENAI_API_KEY or GEMINI_API_KEY for live LLM. You said: ${message.slice(0, 80)}`;
 }

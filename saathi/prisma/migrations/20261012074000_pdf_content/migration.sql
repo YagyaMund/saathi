@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "PdfJob" ADD COLUMN IF NOT EXISTS "content" BYTEA;
