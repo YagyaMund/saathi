@@ -172,14 +172,11 @@ export default async function HomePage() {
                 style={{ background: `var(--t-${p.thumbTone})` }}
               />
               <span className="pm">
-                {p.postedAt.toLocaleDateString("en-IN", { weekday: "short" })} ·{" "}
-                {p.statusLabel}
+                {p.postedAt.toLocaleDateString("en-IN", { weekday: "short" })}
               </span>
-              {p.warnLabel ? (
-                <span className="pm warn">{p.warnLabel}</span>
-              ) : (
-                <span className="pm">All live</span>
-              )}
+              <span className={`pm ${p.warnLabel ? "warn" : ""}`}>
+                {p.warnLabel || p.statusLabel || "All live"}
+              </span>
             </Link>
           ))}
         </div>

@@ -372,6 +372,9 @@ a {
 .pcard {
   text-align: left;
   min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .pcard .pimg {
@@ -384,10 +387,15 @@ a {
 }
 
 .pcard .pm {
+  display: block;
   font-size: 11px;
   color: var(--ink-2);
-  margin-top: 6px;
-  line-height: 1.35;
+  margin-top: 5px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .pcard .pm.warn {
@@ -913,12 +921,6 @@ a {
 }
 
 .stat .n {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pcard .pm {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
