@@ -271,9 +271,9 @@ model PdfJob {
   id        String   @id @default(cuid())
   shopId    String
   status    String   @default("ready")
-  /// Optional local/tmp path label (not used on Vercel — bytes live in `content`)
+  /// Optional path label; bytes live in `content`
   filePath  String?
-  /// PDF bytes for serverless download (Vercel /var/task is read-only)
+  /// PDF bytes for download (ephemeral container disk is not relied on)
   content   Bytes?
   createdAt DateTime @default(now())
   shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)

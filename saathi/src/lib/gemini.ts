@@ -1,6 +1,5 @@
 /**
  * @deprecated Import from `@/lib/llm` instead.
- * Re-exports kept for existing call sites during the LLM rebrand.
  */
 export {
   geminiConfigured,
@@ -8,5 +7,6 @@ export {
   llmStatusDetail,
   llmStatusLabel,
   runAgentPrompt,
+  runAgentPromptWithImageUrls,
   type LlmMode,
 } from "@/lib/llm";

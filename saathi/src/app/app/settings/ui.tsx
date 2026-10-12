@@ -41,7 +41,7 @@ export function SettingsClient({
   igConnected: boolean;
   igFlash: string | null;
   igReason: string | null;
-  llmLabel: "Gemini" | "LLM" | "Mock";
+  llmLabel: "Gemini" | "Mock";
   llmDetail: string;
   vertexAdc: boolean;
   loginPath: string;
@@ -196,17 +196,10 @@ export function SettingsClient({
               <span className="sk" style={{ display: "block" }}>Model status</span>
               <span className="sv" style={{ display: "block" }}>
                 {llmDetail}
-                {vertexAdc ? " · no API key on Cloud Run" : ""}
               </span>
             </span>
             <span className={`chip ${llmLabel === "Mock" ? "" : "ok"}`}>
-              {llmLabel === "Gemini"
-                ? vertexAdc
-                  ? "Gemini · Vertex"
-                  : "Gemini"
-                : llmLabel === "LLM"
-                  ? "LLM connected"
-                  : "Mock"}
+              {llmLabel === "Gemini" ? "Gemini · Vertex" : "Mock"}
             </span>
           </div>
         </div>

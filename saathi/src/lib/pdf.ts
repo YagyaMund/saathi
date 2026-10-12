@@ -21,8 +21,7 @@ export async function generateCataloguePdf(shopId: string): Promise<{
   const fileName = `catalogue-${Date.now()}.pdf`;
   const buffer = await renderCataloguePdfBuffer(shop, items);
 
-  // Persist bytes in Postgres — Vercel /var/task is read-only; /tmp does not
-  // survive across generate → download on separate serverless invocations.
+  // Persist bytes in Postgres so ephemeral containers don't rely on local disk.
   const job = await prisma.pdfJob.create({
     data: {
       shopId,

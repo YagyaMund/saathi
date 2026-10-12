@@ -1,4 +1,4 @@
-# Saathi — Next.js on Cloud Run (dual-deploy with Vercel)
+# Saathi — Next.js on Cloud Run (GCP)
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-certificates \

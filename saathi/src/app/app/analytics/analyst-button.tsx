@@ -19,12 +19,10 @@ export function AnalystButton({ latest }: { latest: string }) {
     setBody(data.report?.body || "");
     const label =
       data.mode === "gemini"
-        ? "Gemini"
-        : data.mode === "llm"
-          ? "LLM"
-          : data.mode === "mock"
-            ? "Mock"
-            : data.mode;
+        ? "Gemini · Vertex"
+        : data.mode === "mock"
+          ? "Mock"
+          : data.mode;
     setMode(`${label} · TTS ${data.tts}`);
   }
 

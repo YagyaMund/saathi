@@ -12,15 +12,13 @@ function getAuth() {
   return auth;
 }
 
-/** True when we should prefer Vertex / Google APIs via ADC (Cloud Run, GCE, or ADC file). */
+/**
+ * True when this process should use Vertex / Google APIs via ADC.
+ * Cloud Run (metadata SA) or local `gcloud auth application-default login`.
+ */
 export function preferGoogleAdc(): boolean {
-  if (process.env.GEMINI_USE_VERTEX === "0" || process.env.GOOGLE_ADC === "0") {
-    return false;
-  }
-  if (process.env.GEMINI_USE_VERTEX === "1" || process.env.GOOGLE_ADC === "1") {
-    return true;
-  }
-  // Cloud Run / Cloud Functions / GCE
+  if (process.env.GOOGLE_ADC === "0") return false;
+  if (process.env.GOOGLE_ADC === "1") return true;
   if (
     process.env.K_SERVICE ||
     process.env.K_REVISION ||
@@ -29,16 +27,8 @@ export function preferGoogleAdc(): boolean {
   ) {
     return true;
   }
-  // Cloud Run also sets GOOGLE_CLOUD_PROJECT; prefer ADC there over API keys
-  if (
-    process.env.GOOGLE_CLOUD_PROJECT &&
-    !process.env.GEMINI_API_KEY &&
-    !process.env.LLM_API_KEY &&
-    !process.env.OPENAI_API_KEY
-  ) {
-    return true;
-  }
-  return Boolean(process.env.GOOGLE_CLOUD_PROJECT && process.env.K_SERVICE);
+  // Local/dev with project set — use ADC (run: gcloud auth application-default login)
+  return Boolean(process.env.GOOGLE_CLOUD_PROJECT?.trim());
 }
 
 export function gcpProjectId(): string {
@@ -71,11 +61,14 @@ export async function getAccessToken(): Promise<string> {
   const client = await getClient();
   const tok = await client.getAccessToken();
   const token = typeof tok === "string" ? tok : tok?.token;
-  if (!token) throw new Error("ADC: no access token (check Cloud Run service account)");
+  if (!token) {
+    throw new Error(
+      "ADC: no access token. On Cloud Run check the service account; locally run: gcloud auth application-default login",
+    );
+  }
   return token;
 }
 
-/** Probe whether ADC can mint a token (does not prove Vertex IAM). */
 export async function adcReady(): Promise<boolean> {
   try {
     await getAccessToken();

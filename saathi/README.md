@@ -1,14 +1,20 @@
 # Saathi
 
-Multi-tenant seller platform for small Indian shops. Instagram posts become catalogue drafts; nothing goes live without her approval. Buyers start in Instagram DMs and comments. Google Sheet is the source of truth when connected. Hindi and English.
+Multi-tenant seller platform for small Indian shops. Instagram posts become catalogue drafts; nothing goes live without her approval. Buyers start in Instagram DMs and comments. Hindi and English.
 
-Project: `saathi-510820`. Seeded demo shop: **Sunita Handicrafts**.
+**Host:** Google Cloud Run · project `saathi-510820` · [https://saathi-160174088264.us-central1.run.app](https://saathi-160174088264.us-central1.run.app)
+
+Seeded demo: **Sunita Handicrafts**.
 
 ## Run locally
 
 ```bash
 cd saathi
 npm install
+# ADC for Vertex (required for live agents):
+gcloud auth application-default login
+export GOOGLE_CLOUD_PROJECT=saathi-510820
+export GCP_REGION=us-central1
 npx prisma migrate dev
 npm run db:seed
 npm run dev
@@ -26,52 +32,37 @@ Open [http://127.0.0.1:4747](http://127.0.0.1:4747).
 - **Home** — needs-you tasks, today stats, posts strip
 - **Approvals** — pending drafts; approve through the **code** approval gate
 - **Messages** — Instagram DMs (simulated until Meta is connected)
-- **Posts** — feed + suggestions (never edits Instagram)
-- **Items / Orders** — catalogue with **edit** (stock, price, floor, attributes); orders under Items; PDF
-- **Analytics** — week stats, **Asked for, not available**, drop-offs, bestsellers, Shop Analyst
-- **Settings** — Connect Instagram, agent toggles, LLM status, Google Sheet stub
+- **Posts** — feed + Post Reader (Vertex Gemini **vision** reads photos)
+- **Items / Orders** — catalogue edit; orders under Items; PDF
+- **Analytics** — Asked for / not available, drop-offs, bestsellers, Shop Analyst
+- **Settings** — Connect Instagram, agent toggles, Gemini · Vertex status
+
+## LLM — Vertex + ADC only
+
+Production and local live path: **Vertex AI Gemini** with Application Default Credentials. No API keys.
+
+- Text agents: `src/lib/llm.ts` → `src/lib/google/vertex.ts`
+- **Vision (image understanding):** Post Reader and payment screenshots use multimodal Gemini (`inlineData` / image URLs). **Not Imagen** (Imagen generates images; we only read them).
+- Local: `gcloud auth application-default login` + `GOOGLE_CLOUD_PROJECT=saathi-510820`
+- Cloud Run: service account + `roles/aiplatform.user` (metadata ADC)
 
 ## Instagram / Meta
 
-**Path: Instagram Login** — media, comments, DMs without a Facebook Page.
+Instagram Login — media, comments, DMs. Env: `META_APP_ID`, `META_APP_SECRET`, `META_WEBHOOK_VERIFY_TOKEN`, `APP_BASE_URL`.
 
-| Env | Purpose |
-| --- | --- |
-| `META_APP_ID` | Instagram App ID |
-| `META_APP_SECRET` | Instagram App Secret |
-| `META_WEBHOOK_VERIFY_TOKEN` | Webhook verify token |
-| `APP_BASE_URL` / `META_REDIRECT_URI` | Public URL / OAuth callback |
-| `TOKEN_ENCRYPTION_KEY` | Optional; else from `AUTH_SECRET` |
+OAuth callback: `{APP_BASE_URL}/api/auth/instagram/callback`  
+Webhook: `{APP_BASE_URL}/api/webhooks/meta`
 
-Without `META_*`, Connect stays disabled and shops use **simulation**. Webhook: `/api/webhooks/meta`. Callback: `/api/auth/instagram/callback`. Sellers need an **Instagram Professional** account. No content publishing.
+## Deploy (Cloud Run)
 
-App Review / Business Verification: operator steps (not in-repo).
+```bash
+cd saathi
+docker build -t us-central1-docker.pkg.dev/saathi-510820/saathi/saathi:latest .
+docker push us-central1-docker.pkg.dev/saathi-510820/saathi/saathi:latest
+gcloud run deploy saathi --project=saathi-510820 --region=us-central1 \
+  --image=us-central1-docker.pkg.dev/saathi-510820/saathi/saathi:latest
+```
 
-## LLM
+`Dockerfile` runs `prisma migrate deploy` then `next start` on `PORT`. Secrets: `DATABASE_URL`, `AUTH_SECRET` in Secret Manager. Env: `GOOGLE_CLOUD_PROJECT`, `GCP_REGION`, `APP_BASE_URL`, `SAATHI_MODEL=gemini-2.5-flash`.
 
-| Host | Auth |
-| --- | --- |
-| **Cloud Run** | **Vertex AI Gemini via ADC** (service account — no API key) |
-| **Vercel / local** | Optional `GEMINI_API_KEY`, or interim `LLM_API_KEY` (UI shows **LLM**) |
-
-Precedence (`src/lib/llm.ts`): Vertex ADC → Gemini API key → `LLM_API_KEY` → mocks. Other Google clients in `src/lib/google/*` (Translation, TTS helper) use the same ADC.
-
-## Deploy (dual: Vercel + Cloud Run)
-
-| Host | URL |
-| --- | --- |
-| **Vercel** | https://saathi-ruby.vercel.app |
-| **Cloud Run** | https://saathi-160174088264.us-central1.run.app |
-
-Both use the same Cloud SQL Postgres (`saathi-pg` in `saathi-510820`). Keep Vercel live; Cloud Run is the GCP path.
-
-**Vercel:** Root Directory `saathi`; build runs `prisma migrate deploy && next build`.
-
-**Cloud Run:** `Dockerfile` + `docker-entrypoint.sh` (migrate then `next start` on `PORT`). Image: `us-central1-docker.pkg.dev/saathi-510820/saathi/saathi`. Secrets in Secret Manager (`saathi-database-url`, `saathi-auth-secret`, `saathi-llm-api-key`). Set `APP_BASE_URL` to the Cloud Run URL on that service.
-
-**Meta callbacks:** add *both* redirect URIs in the Meta app:
-
-- `https://saathi-ruby.vercel.app/api/auth/instagram/callback`
-- `https://saathi-160174088264.us-central1.run.app/api/auth/instagram/callback`
-
-Env (either host): `DATABASE_URL`, `AUTH_SECRET`, optional `GEMINI_API_KEY` / `LLM_API_KEY`, optional `META_*`.
+Database: Cloud SQL `saathi-pg`. Details: see internal deploy notes / `docs/google-services-used.md`.
