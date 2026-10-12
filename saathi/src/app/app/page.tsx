@@ -96,7 +96,7 @@ export default async function HomePage() {
                 className={`need-row${n.urgent ? " urgent" : ""}`}
                 href={n.href}
               >
-                <span className="need-av">{initial(n.title)}</span>
+                <span className="need-av">{n.mark}</span>
                 <span className="need-copy">
                   <span className="need-title">{n.title}</span>
                   <span className="need-detail">{n.detail}</span>
