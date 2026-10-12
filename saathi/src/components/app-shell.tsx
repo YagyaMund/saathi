@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { BackIcon, HomeIcon, ItemsIcon, MsgIcon, PostsIcon, SettingsIcon } from "@/components/icons";
+import {
+  AnalyticsIcon,
+  BackIcon,
+  HomeIcon,
+  MsgIcon,
+  OrdersIcon,
+  SettingsIcon,
+} from "@/components/icons";
+
+export type AppTab = "home" | "messages" | "analytics" | "orders" | "";
 
 export function AppShell({
   title,
@@ -11,7 +20,7 @@ export function AppShell({
 }: {
   title: string;
   sub: string;
-  tab?: "home" | "messages" | "posts" | "items" | "";
+  tab?: AppTab;
   backHref?: string;
   needsCount?: number;
   children: React.ReactNode;
@@ -25,7 +34,7 @@ export function AppShell({
               <BackIcon />
             </Link>
           ) : null}
-          <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+          <div className="hdr-copy">
             <h1>{title}</h1>
             <div className="sub">{sub}</div>
           </div>
@@ -49,13 +58,19 @@ export function AppShell({
             <MsgIcon />
             Messages
           </Link>
-          <Link href="/app/posts" aria-current={tab === "posts" ? "page" : undefined}>
-            <PostsIcon />
-            Posts
+          <Link
+            href="/app/analytics"
+            aria-current={tab === "analytics" ? "page" : undefined}
+          >
+            <AnalyticsIcon />
+            Analytics
           </Link>
-          <Link href="/app/items" aria-current={tab === "items" ? "page" : undefined}>
-            <ItemsIcon />
-            Items
+          <Link
+            href="/app/orders"
+            aria-current={tab === "orders" ? "page" : undefined}
+          >
+            <OrdersIcon />
+            Orders
           </Link>
         </div>
       </nav>

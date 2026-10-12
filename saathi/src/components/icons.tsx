@@ -58,6 +58,25 @@ export function ItemsIcon() {
   );
 }
 
+export function AnalyticsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19V5M4 19h16" />
+      <path d="M8 16V10M12 16V7M16 16v-5" />
+    </svg>
+  );
+}
+
+export function OrdersIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 7h12l-1.2 9.2a2 2 0 0 1-2 1.8H9.4a2 2 0 0 1-2-1.7L6 4H3" />
+      <circle cx="10" cy="21" r="1" />
+      <circle cx="17" cy="21" r="1" />
+    </svg>
+  );
+}
+
 export function MicIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">

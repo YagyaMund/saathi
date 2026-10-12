@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Chevron } from "@/components/icons";
 import { requireShopSession } from "@/lib/auth";
@@ -52,6 +53,40 @@ export default async function SettingsPage() {
             </span>
             <span className="chev"><Chevron /></span>
           </div>
+        </div>
+      </div>
+
+      <div className="sec">
+        <div className="sec-h">
+          <span className="sec-t">Catalogue</span>
+        </div>
+        <div className="panel">
+          <Link className="srow" href="/app/items">
+            <span className="sl">
+              <span className="sk" style={{ display: "block" }}>
+                Your items
+              </span>
+              <span className="sv" style={{ display: "block" }}>
+                {data.items.length} approved · make a catalogue PDF
+              </span>
+            </span>
+            <span className="chev">
+              <Chevron />
+            </span>
+          </Link>
+          <Link className="srow" href="/app/approvals">
+            <span className="sl">
+              <span className="sk" style={{ display: "block" }}>
+                Approvals
+              </span>
+              <span className="sv" style={{ display: "block" }}>
+                {data.pendingDrafts.length} waiting for you
+              </span>
+            </span>
+            <span className="chev">
+              <Chevron />
+            </span>
+          </Link>
         </div>
       </div>
 

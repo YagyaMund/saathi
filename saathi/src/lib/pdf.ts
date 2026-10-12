@@ -119,7 +119,7 @@ async function renderCataloguePdfBuffer(
       font: fontBold,
       color: ink,
     });
-    const price = inr(item.priceInr);
+    const price = inrPdf(item.priceInr);
     const pw = fontBold.widthOfTextAtSize(price, 13);
     page.drawText(price, {
       x: margin + maxWidth - pw,
@@ -130,7 +130,7 @@ async function renderCataloguePdfBuffer(
     });
     y -= 18;
     draw(
-      `${item.category} · ${stock} in stock · floor ${inr(item.floorInr)}`,
+      `${item.category} · ${stock} in stock · floor ${inrPdf(item.floorInr)}`,
       10,
       muted,
     );

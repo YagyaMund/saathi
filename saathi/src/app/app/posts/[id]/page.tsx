@@ -30,7 +30,7 @@ export default async function PostDetailPage({
     <AppShell
       title="Post review"
       sub="Suggestions only — Saathi never edits Instagram"
-      tab="posts"
+      tab=""
       backHref="/app/posts"
       needsCount={needsCount}
     >

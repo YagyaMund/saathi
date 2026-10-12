@@ -10,7 +10,7 @@ export default async function ApprovalsPage() {
     <AppShell
       title="Approve items"
       sub="Nothing goes live until you say yes"
-      tab="posts"
+      tab=""
       backHref="/app"
       needsCount={data.needsCount}
     >

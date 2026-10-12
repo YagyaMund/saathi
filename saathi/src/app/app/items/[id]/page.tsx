@@ -31,7 +31,7 @@ export default async function ItemPage({
     <AppShell
       title={item.name}
       sub={`${item.category} · floor ${inr(item.floorInr)}`}
-      tab="items"
+      tab=""
       backHref="/app/items"
       needsCount={needsCount}
     >

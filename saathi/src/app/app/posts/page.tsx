@@ -13,19 +13,11 @@ export default async function PostsPage() {
     <AppShell
       title="Your posts"
       sub="Simulated Instagram · never edited by Saathi"
-      tab="posts"
+      tab=""
+      backHref="/app"
       needsCount={data.needsCount}
     >
-      <div
-        style={{
-          background: "var(--surface-2)",
-          borderRadius: "var(--r)",
-          padding: "11px 13px",
-          fontSize: 13,
-          color: "var(--ink-2)",
-          lineHeight: 1.45,
-        }}
-      >
+      <div className="note-panel">
         Everything you post on Instagram shows up here. Saathi reads each one and
         drafts the items.
       </div>

@@ -39,7 +39,7 @@ export async function getShopBundle(shopId: string) {
       where: { shopId },
       include: { items: true },
       orderBy: { createdAt: "desc" },
-      take: 10,
+      take: 40,
     }),
     prisma.conversation.count({ where: { shopId, needsSeller: true } }),
   ]);

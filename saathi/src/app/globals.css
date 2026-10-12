@@ -148,6 +148,11 @@ a {
   gap: 12px;
 }
 
+.hdr-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .hdr h1 {
   margin: 0;
   font-size: 20px;
@@ -772,4 +777,174 @@ a {
   color: var(--ink-2);
   font-size: 14px;
   line-height: 1.45;
+}
+
+.empty-panel,
+.note-panel,
+.insight-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 14px 15px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+
+.note-panel {
+  background: var(--surface-2);
+  border-color: transparent;
+}
+
+.insight-panel {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+
+.insight-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.insight-body {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.sec-lead {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin: -4px 0 14px;
+  line-height: 1.4;
+}
+
+.bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.bar-item {
+  min-width: 0;
+}
+
+.bar-lab {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.bar-n {
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+.order-row {
+  align-items: center;
+}
+
+.order-copy,
+.mrow-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.order-title,
+.nm {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order-meta {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.order-amt {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 0 0 auto;
+  margin-left: 8px;
+}
+
+.mrow-chip {
+  display: inline-flex;
+  margin-top: 6px;
+}
+
+.meta-warn {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.toolbar-seg {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.toolbar-add {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+
+.stat .n {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pcard .pm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav {
+  /* keep phone shell centered with the app column */
+  display: flex;
+  justify-content: center;
+}
+
+.nav-in {
+  width: 100%;
+}
+
+.app .nav {
+  left: 50%;
+  right: auto;
+  width: min(440px, 100%);
+  transform: translateX(-50%);
+  border-inline: 1px solid var(--line);
+}
+
+@media (max-width: 460px) {
+  .app .nav {
+    border-inline: 0;
+    width: 100%;
+  }
 }

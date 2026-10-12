@@ -15,16 +15,23 @@ export default async function ItemsPage() {
     <AppShell
       title="Your items"
       sub={`${data.items.length} in catalogue · approved only`}
-      tab="items"
+      tab=""
+      backHref="/app"
       needsCount={data.needsCount}
     >
-      <div style={{ display: "flex", gap: 9, alignItems: "center", marginBottom: 14 }}>
-        <div className="seg" style={{ margin: 0, flex: "1 1 auto" }}>
-          <button aria-pressed="true">All · {data.items.length}</button>
-          <button aria-pressed="false">Pottery</button>
-          <button aria-pressed="false">Low stock</button>
+      <div className="toolbar">
+        <div className="seg toolbar-seg">
+          <button type="button" aria-pressed="true">
+            All · {data.items.length}
+          </button>
+          <button type="button" aria-pressed="false">
+            Pottery
+          </button>
+          <button type="button" aria-pressed="false">
+            Low stock
+          </button>
         </div>
-        <Link className="btn sm" href="/app/items/new" style={{ height: 34, padding: "0 12px", fontSize: 13 }}>
+        <Link className="btn sm toolbar-add" href="/app/items/new">
           Add
         </Link>
       </div>

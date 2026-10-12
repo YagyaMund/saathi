@@ -12,7 +12,7 @@ export default async function NewItemPage() {
     <AppShell
       title="Add item"
       sub="Or post on Instagram and let Saathi draft it"
-      tab="items"
+      tab=""
       backHref="/app/items"
       needsCount={needsCount}
     >
