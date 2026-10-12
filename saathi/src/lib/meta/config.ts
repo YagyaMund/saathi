@@ -43,6 +43,10 @@ export function appBaseUrl(): string {
       /* fall through */
     }
   }
+  // Prefer stable production host over per-deploy VERCEL_URL previews
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim()) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.trim().replace(/\/$/, "")}`;
+  }
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   return "http://127.0.0.1:4747";
 }
