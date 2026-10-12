@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { buildSharedContext } from "@/lib/prompts";
-import { runAgentPrompt } from "@/lib/gemini";
+import { runAgentPrompt } from "@/lib/llm";
 
 export async function POST() {
   try {

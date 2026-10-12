@@ -2,6 +2,8 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Chevron } from "@/components/icons";
 import { requireShopSession } from "@/lib/auth";
+import { llmStatusLabel } from "@/lib/llm";
+import { metaConfigured, metaLoginPathChoice, metaRedirectUri } from "@/lib/meta/config";
 import { getShopBundle } from "@/lib/shop-data";
 import { SettingsClient } from "./ui";
 
@@ -17,10 +19,18 @@ const STAFF: { key: string; title: string; sub: string }[] = [
   { key: "shop_analyst", title: "Evening report", sub: "A voice note every day at 8 pm" },
 ];
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ig?: string; reason?: string }>;
+}) {
   const session = await requireShopSession();
   const data = await getShopBundle(session.shopId);
   const shop = data.shop;
+  const sp = await searchParams;
+  const metaReady = metaConfigured();
+  const llmLabel = llmStatusLabel();
+  const connected = Boolean(shop.igUserId && shop.metaTokenEnc && !shop.instagramSim);
 
   return (
     <AppShell
@@ -38,23 +48,46 @@ export default async function SettingsPage() {
             <span className="sl">
               <span className="sk" style={{ display: "block" }}>{shop.instagramHandle || "Not connected"}</span>
               <span className="sv" style={{ display: "block" }}>
-                {shop.instagramSim ? "Simulated · " : ""}
-                {shop.instagramFollowers.toLocaleString("en-IN")} followers
+                {connected
+                  ? "Connected via Instagram Login"
+                  : shop.instagramSim
+                    ? "Simulated · demo data"
+                    : "Disconnecting…"}
+                {shop.instagramFollowers
+                  ? ` · ${shop.instagramFollowers.toLocaleString("en-IN")} followers`
+                  : ""}
               </span>
             </span>
-            <span className="chip ok">Live</span>
+            <span className={`chip ${connected ? "ok" : ""}`}>
+              {connected ? "Live" : "Sim"}
+            </span>
           </div>
           <div className="srow">
             <span className="sl">
               <span className="sk" style={{ display: "block" }}>What Saathi can do</span>
               <span className="sv" style={{ display: "block" }}>
-                Read your posts · reply to DMs · reply to comments
+                Read your posts · reply to DMs · reply to comments — never posts or edits for you
               </span>
             </span>
             <span className="chev"><Chevron /></span>
           </div>
         </div>
       </div>
+
+      <SettingsClient
+        flags={data.agentFlags}
+        staff={STAFF}
+        googleConnected={shop.googleConnected}
+        googleEmail={shop.googleEmail}
+        userEmail={session.email}
+        metaReady={metaReady}
+        igConnected={connected}
+        igFlash={sp.ig || null}
+        igReason={sp.reason || null}
+        llmLabel={llmLabel}
+        loginPath={metaLoginPathChoice()}
+        redirectHint={metaRedirectUri()}
+      />
 
       <div className="sec">
         <div className="sec-h">
@@ -114,14 +147,6 @@ export default async function SettingsPage() {
           </div>
         </div>
       </div>
-
-      <SettingsClient
-        flags={data.agentFlags}
-        staff={STAFF}
-        googleConnected={shop.googleConnected}
-        googleEmail={shop.googleEmail}
-        userEmail={session.email}
-      />
     </AppShell>
   );
 }

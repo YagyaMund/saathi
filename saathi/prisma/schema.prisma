@@ -34,6 +34,12 @@ model Shop {
   spreadsheetId    String?
   instagramSim     Boolean  @default(true)
   instagramFollowers Int    @default(0)
+  /// Instagram professional account ID (Instagram Login)
+  igUserId         String?
+  /// AES-GCM encrypted long-lived Instagram User access token
+  metaTokenEnc     String?
+  metaTokenExpiresAt DateTime?
+  instagramConnectedAt DateTime?
   agentFlags       String   @default("{}")
   createdAt        DateTime @default(now())
   members          ShopMember[]
@@ -47,6 +53,8 @@ model Shop {
   analyticsSnap    AnalyticsSnap?
   eveningReports   EveningReport[]
   pdfJobs          PdfJob[]
+
+  @@index([igUserId])
 }
 
 model ShopMember {
@@ -97,10 +105,13 @@ model Variant {
 model IgPost {
   id          String   @id @default(cuid())
   shopId      String
+  /// Instagram media ID when connected; null for sim seed posts
+  externalId  String?
   permalink   String
   caption     String
   postedAt    DateTime
   photoCount  Int      @default(1)
+  mediaUrl    String?
   thumbTone   String   @default("pottery")
   postType    String   @default("product")
   statusLabel String   @default("")
@@ -109,6 +120,8 @@ model IgPost {
   shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
   drafts      Draft[]
   comments    IgComment[]
+
+  @@unique([shopId, externalId])
 }
 
 model Draft {
@@ -150,6 +163,8 @@ model Conversation {
   id            String    @id @default(cuid())
   shopId        String
   buyerName     String
+  /// Instagram-scoped ID of the buyer (IGSID)
+  buyerIgsid    String?
   channel       String    @default("dm")
   needsSeller   Boolean   @default(false)
   chip          String?
@@ -157,9 +172,12 @@ model Conversation {
   lastPreview   String    @default("")
   lastAt        DateTime  @default(now())
   windowHoursLeft Float?
+  windowOpenedAt DateTime?
   handledBySaathi Boolean @default(false)
   shop          Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
   messages      Message[]
+
+  @@index([shopId, buyerIgsid])
 }
 
 model Message {
@@ -168,17 +186,32 @@ model Message {
   sender         String
   body           String
   kind           String   @default("text")
+  externalId     String?
   createdAt      DateTime @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([externalId])
 }
 
 model IgComment {
+  id          String   @id @default(cuid())
+  postId      String
+  externalId  String?
+  author      String
+  authorIgsid String?
+  body        String
+  createdAt   DateTime @default(now())
+  post        IgPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([externalId])
+}
+
+/// Dedupes Meta webhook deliveries (retries up to 36h)
+model WebhookEvent {
   id        String   @id @default(cuid())
-  postId    String
-  author    String
-  body      String
+  eventKey  String   @unique
+  kind      String
   createdAt DateTime @default(now())
-  post      IgPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Order {

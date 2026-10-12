@@ -59,10 +59,11 @@ export default async function AnalyticsPage() {
 
       <div className="sec">
         <div className="sec-h">
-          <span className="sec-t">Unmet asks</span>
+          <span className="sec-t">Asked for, not available</span>
         </div>
         <div className="sec-lead">
-          People asked for these. You don&apos;t have them.
+          People asked for these in DMs and comments. You don&apos;t have them
+          in the catalogue.
         </div>
         <div className="bar-list">
           {data.shop.unmetAsks.slice(0, 4).map((u) => (

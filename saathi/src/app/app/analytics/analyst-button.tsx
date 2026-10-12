@@ -17,7 +17,15 @@ export function AnalystButton({ latest }: { latest: string }) {
       return;
     }
     setBody(data.report?.body || "");
-    setMode(`${data.mode} · TTS ${data.tts}`);
+    const label =
+      data.mode === "gemini"
+        ? "Gemini"
+        : data.mode === "llm"
+          ? "LLM"
+          : data.mode === "mock"
+            ? "Mock"
+            : data.mode;
+    setMode(`${label} · TTS ${data.tts}`);
   }
 
   return (

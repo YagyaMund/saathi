@@ -21,6 +21,7 @@ async function main() {
   await prisma.sheetRow.deleteMany();
   await prisma.pdfJob.deleteMany();
   await prisma.eveningReport.deleteMany();
+  await prisma.webhookEvent.deleteMany();
   await prisma.message.deleteMany();
   await prisma.conversation.deleteMany();
   await prisma.igComment.deleteMany();
@@ -253,20 +254,26 @@ async function main() {
     },
   });
 
+  // At least one clear pending-approval case for the Approvals screen demo.
   await prisma.draft.createMany({
     data: [
       {
         shopId: shop.id,
         postId: morning.id,
         draftKey: "d1",
-        name: "Blue pottery vase",
+        name: "Blue pottery bowl, peacock",
         category: "pottery",
-        description: "hand-painted · 9 inch",
-        attributes: JSON.stringify({ colour: "cobalt", height_in: "9" }),
-        priceInr: 1400,
-        stock: 6,
+        description:
+          "Small serving bowl from this morning's kiln post — needs price and how many pieces.",
+        attributes: JSON.stringify({
+          colour: "peacock blue",
+          pattern: "floral",
+          food_safe: null,
+        }),
+        priceInr: null,
+        stock: null,
         thumbTone: "pottery",
-        missing: "[]",
+        missing: JSON.stringify(["price", "stock"]),
         status: "pending",
         imageIndex: 0,
       },
@@ -274,7 +281,7 @@ async function main() {
         shopId: shop.id,
         postId: morning.id,
         draftKey: "d2",
-        name: "Lac bangles",
+        name: "Lac bangles, festive set",
         category: "bangles",
         description: "needs price and sizes",
         attributes: JSON.stringify({}),
@@ -290,10 +297,10 @@ async function main() {
         shopId: shop.id,
         postId: morning.id,
         draftKey: "d3",
-        name: "Cushion cover",
+        name: "Cushion cover, Sanganeri",
         category: "cushion",
-        description: "price found in your caption",
-        attributes: JSON.stringify({}),
+        description: "price found in your caption — still needs stock",
+        attributes: JSON.stringify({ print: "Sanganeri block" }),
         priceInr: 900,
         stock: null,
         thumbTone: "block",
