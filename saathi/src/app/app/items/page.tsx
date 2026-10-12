@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
+import { ItemsOrdersSeg } from "@/components/items-orders-seg";
 import { Chevron } from "@/components/icons";
 import { Thumb } from "@/components/thumb";
 import { requireShopSession } from "@/lib/auth";
@@ -15,22 +16,15 @@ export default async function ItemsPage() {
     <AppShell
       title="Your items"
       sub={`${data.items.length} in catalogue · approved only`}
-      tab=""
-      backHref="/app"
+      tab="items"
       needsCount={data.needsCount}
     >
-      <div className="toolbar">
-        <div className="seg toolbar-seg">
-          <button type="button" aria-pressed="true">
-            All · {data.items.length}
-          </button>
-          <button type="button" aria-pressed="false">
-            Pottery
-          </button>
-          <button type="button" aria-pressed="false">
-            Low stock
-          </button>
-        </div>
+      <div className="items-top">
+        <ItemsOrdersSeg
+          active="items"
+          itemCount={data.items.length}
+          orderCount={data.orders.length}
+        />
         <Link className="btn sm toolbar-add" href="/app/items/new">
           Add
         </Link>
@@ -48,23 +42,25 @@ export default async function ItemsPage() {
               style={{ opacity: item.status === "sold_out" ? 0.62 : 1 }}
             >
               <Thumb tone={item.thumbTone} />
-              <span style={{ flex: "1 1 auto", minWidth: 0 }}>
-                <span style={{ display: "block", fontSize: 14.5, fontWeight: 600 }}>
-                  {item.name}
-                </span>
-                <span style={{ display: "flex", gap: 6, marginTop: 7, flexWrap: "wrap" }}>
+              <span className="order-copy">
+                <span className="order-title">{item.name}</span>
+                <span className="item-chips">
                   {item.status === "sold_out" || stock === 0 ? (
                     <span className="chip warn">Sold out</span>
                   ) : (
                     <span className="chip ok">{stock} in stock</span>
                   )}
                   {zeroVariant ? (
-                    <span className="chip warn">{zeroVariant.label} · none</span>
+                    <span className="chip warn">
+                      {zeroVariant.label} · none
+                    </span>
                   ) : null}
                 </span>
               </span>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>{inr(item.priceInr)}</span>
-              <span className="chev"><Chevron /></span>
+              <span className="order-amt">{inr(item.priceInr)}</span>
+              <span className="chev">
+                <Chevron />
+              </span>
             </Link>
           );
         })}

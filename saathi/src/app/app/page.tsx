@@ -30,6 +30,41 @@ export default async function HomePage() {
     (c.chip || "").toLowerCase().includes("match"),
   );
 
+  const needs: {
+    key: string;
+    href: string;
+    title: string;
+    detail: string;
+    urgent?: boolean;
+  }[] = [];
+
+  if (urgent) {
+    needs.push({
+      key: "urgent",
+      href: `/app/messages/${urgent.id}`,
+      title: `${urgent.buyerName.split(" ")[0]} is waiting for an answer`,
+      detail: `${urgent.lastPreview} · ${relative(urgent.lastAt)}`,
+      urgent: true,
+    });
+  }
+  if (pendingDrafts.length) {
+    needs.push({
+      key: "approvals",
+      href: "/app/approvals",
+      title: `${pendingDrafts.length} items ready to approve`,
+      detail: "From this morning's post · some need a price",
+    });
+  }
+  if (paymentIssue) {
+    needs.push({
+      key: "payment",
+      href: `/app/messages/${paymentIssue.id}`,
+      title: `${paymentIssue.buyerName.split(" ")[0]}'s payment doesn't match`,
+      detail: paymentIssue.lastPreview,
+      urgent: true,
+    });
+  }
+
   return (
     <AppShell
       title={shop.name}
@@ -39,99 +74,31 @@ export default async function HomePage() {
     >
       <div className="sec">
         <div className="sec-h">
-          <span className="sec-t">Needs you · {needsCount}</span>
-          <Link className="link" href="/app/items">
-            Items
-          </Link>
+          <span className="sec-t">Needs you · {needs.length || needsCount}</span>
         </div>
-        <div className="tasks">
-          {urgent ? (
-            <Link className="task urgent" href={`/app/messages/${urgent.id}`}>
-              <span className="ic">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 20.5l1.6-4.9A8.4 8.4 0 1 1 21 11.5z" />
-                </svg>
-              </span>
-              <span className="tx">
-                <span className="t1">
-                  {urgent.buyerName.split(" ")[0]} is waiting for an answer
+        {needs.length === 0 ? (
+          <div className="empty-panel">
+            Nothing waiting. Saathi is handling the rest.
+          </div>
+        ) : (
+          <div className="panel need-list">
+            {needs.map((n) => (
+              <Link
+                key={n.key}
+                className={`need-row${n.urgent ? " urgent" : ""}`}
+                href={n.href}
+              >
+                <span className="need-copy">
+                  <span className="need-title">{n.title}</span>
+                  <span className="need-detail">{n.detail}</span>
                 </span>
-                <span className="t2">
-                  {urgent.lastPreview} · {relative(urgent.lastAt)}
+                <span className="chev">
+                  <Chevron />
                 </span>
-              </span>
-              <span className="chev">
-                <Chevron />
-              </span>
-            </Link>
-          ) : null}
-          {pendingDrafts.length ? (
-            <Link className="task" href="/app/approvals">
-              <span className="ic">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              </span>
-              <span className="tx">
-                <span className="t1">
-                  {pendingDrafts.length} items ready to approve
-                </span>
-                <span className="t2">
-                  From this morning&apos;s post · some need a price
-                </span>
-              </span>
-              <span className="chev">
-                <Chevron />
-              </span>
-            </Link>
-          ) : null}
-          {paymentIssue ? (
-            <Link className="task" href={`/app/messages/${paymentIssue.id}`}>
-              <span className="ic">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
-                  <path d="M6 10h5M6 14h8" />
-                </svg>
-              </span>
-              <span className="tx">
-                <span className="t1">
-                  {paymentIssue.buyerName.split(" ")[0]}&apos;s payment
-                  doesn&apos;t match
-                </span>
-                <span className="t2">{paymentIssue.lastPreview}</span>
-              </span>
-              <span className="chev">
-                <Chevron />
-              </span>
-            </Link>
-          ) : null}
-          {!urgent && !pendingDrafts.length && !paymentIssue ? (
-            <div className="empty-panel">
-              Nothing waiting. Saathi is handling the rest.
-            </div>
-          ) : null}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="sec">

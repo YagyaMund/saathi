@@ -3,12 +3,12 @@ import {
   AnalyticsIcon,
   BackIcon,
   HomeIcon,
+  ItemsIcon,
   MsgIcon,
-  OrdersIcon,
   SettingsIcon,
 } from "@/components/icons";
 
-export type AppTab = "home" | "messages" | "analytics" | "orders" | "";
+export type AppTab = "home" | "messages" | "analytics" | "items" | "";
 
 export function AppShell({
   title,
@@ -66,11 +66,11 @@ export function AppShell({
             Analytics
           </Link>
           <Link
-            href="/app/orders"
-            aria-current={tab === "orders" ? "page" : undefined}
+            href="/app/items"
+            aria-current={tab === "items" ? "page" : undefined}
           >
-            <OrdersIcon />
-            Orders
+            <ItemsIcon />
+            Items
           </Link>
         </div>
       </nav>

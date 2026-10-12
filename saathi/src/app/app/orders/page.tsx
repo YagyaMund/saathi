@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
+import { ItemsOrdersSeg } from "@/components/items-orders-seg";
 import { Thumb } from "@/components/thumb";
 import { requireShopSession } from "@/lib/auth";
 import { inr } from "@/lib/money";
@@ -29,15 +29,21 @@ export default async function OrdersPage() {
     <AppShell
       title="Orders"
       sub={`${orders.length} recent · from chats and Sheet`}
-      tab="orders"
+      tab="items"
       needsCount={data.needsCount}
     >
+      <ItemsOrdersSeg
+        active="orders"
+        itemCount={data.items.length}
+        orderCount={orders.length}
+      />
+
       {orders.length === 0 ? (
-        <div className="empty-panel">
+        <div className="empty-panel" style={{ marginTop: 14 }}>
           No orders yet. When a buyer confirms, it will show up here.
         </div>
       ) : (
-        <div className="panel">
+        <div className="panel" style={{ marginTop: 14 }}>
           {orders.map((o) => {
             const tone = statusTone(o.status);
             const first = o.items[0];
@@ -74,12 +80,6 @@ export default async function OrdersPage() {
           })}
         </div>
       )}
-
-      <div className="sec">
-        <Link className="btn ghost" href="/app/items">
-          Your catalogue items
-        </Link>
-      </div>
     </AppShell>
   );
 }
