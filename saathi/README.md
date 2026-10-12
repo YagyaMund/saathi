@@ -75,7 +75,7 @@ Eleven prompts live in `prompts/`, extracted from the product prompt library:
 | --- | --- | --- |
 | Instagram | Simulated posts / comments / DMs in SQLite | Meta Instagram Graph API — same conversation/post shape |
 | Google Sign-In / Sheet | Stub connect + local `SheetRow` fixture | OAuth client + Sheets API; UI already shows the flow |
-| PDF | PDFKit in-memory → Postgres bytes (Vercel-safe; no `/var/task` writes) | Optional GCS signed URLs later |
+| PDF | `pdf-lib` in-memory → Postgres bytes (Vercel-safe; no `/var/task` writes) | Optional GCS signed URLs later |
 | TTS evening report | Text stub note | Cloud Text-to-Speech |
 
 Set `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` in `.env` when ready; the Settings Google button is the plug-in point (`/api/settings/google`).
