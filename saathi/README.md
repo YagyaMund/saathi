@@ -49,9 +49,12 @@ App Review / Business Verification: operator steps (not in-repo).
 
 ## LLM
 
-**Production target: Gemini** (`GEMINI_API_KEY`). Interim demos: `LLM_API_KEY` (OpenAI-compatible HTTP under the hood; UI shows **LLM**, never a vendor name). `OPENAI_API_KEY` is a deprecated alias for one release.
+| Host | Auth |
+| --- | --- |
+| **Cloud Run** | **Vertex AI Gemini via ADC** (service account — no API key) |
+| **Vercel / local** | Optional `GEMINI_API_KEY`, or interim `LLM_API_KEY` (UI shows **LLM**) |
 
-Precedence (`src/lib/llm.ts`): Gemini → LLM key → mocks. Status is honest (Gemini / LLM / Mock).
+Precedence (`src/lib/llm.ts`): Vertex ADC → Gemini API key → `LLM_API_KEY` → mocks. Other Google clients in `src/lib/google/*` (Translation, TTS helper) use the same ADC.
 
 ## Deploy (dual: Vercel + Cloud Run)
 

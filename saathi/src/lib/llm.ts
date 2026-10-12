@@ -1,13 +1,16 @@
+import { adcReady, preferGoogleAdc } from "@/lib/google/adc";
+import { vertexGenerateContent } from "@/lib/google/vertex";
 import { houseRules, loadAgentPrompt } from "@/lib/prompts";
 
-/** User-facing / status labels — never "OpenAI". */
+/** User-facing / status labels — never vendor names for interim keys. */
 export type LlmMode = "gemini" | "llm" | "mock";
 
-export function geminiConfigured() {
-  return Boolean(
+function geminiApiKey(): string | null {
+  return (
     process.env.GEMINI_API_KEY?.trim() ||
-      process.env.GOOGLE_API_KEY?.trim() ||
-      process.env.VERTEX_API_KEY?.trim(),
+    process.env.GOOGLE_API_KEY?.trim() ||
+    process.env.VERTEX_API_KEY?.trim() ||
+    null
   );
 }
 
@@ -18,21 +21,45 @@ export function compatibleLlmKey(): string | null {
   return key || null;
 }
 
+export function geminiConfigured() {
+  // Vertex via ADC counts as Gemini configured (Cloud Run production path)
+  if (preferGoogleAdc()) return true;
+  return Boolean(geminiApiKey());
+}
+
 export function llmConfigured() {
   return geminiConfigured() || Boolean(compatibleLlmKey());
 }
 
-/** Honest status for Settings / APIs. */
+/**
+ * Honest status for Settings.
+ * Cloud Run + ADC → "Gemini" (Vertex). API key Gemini → "Gemini". Interim key → "LLM".
+ */
 export function llmStatusLabel(): "Gemini" | "LLM" | "Mock" {
-  if (geminiConfigured()) return "Gemini";
+  if (preferGoogleAdc() || geminiApiKey()) return "Gemini";
   if (compatibleLlmKey()) return "LLM";
   return "Mock";
 }
 
+export function llmStatusDetail(): string {
+  if (preferGoogleAdc()) {
+    return "Gemini on Vertex (ADC) — Cloud Run service account";
+  }
+  if (geminiApiKey()) {
+    return "Gemini API key — local / Vercel path";
+  }
+  if (compatibleLlmKey()) {
+    return "LLM connected — interim demo key";
+  }
+  return "Mock replies — set Vertex ADC (Cloud Run) or GEMINI_API_KEY / LLM_API_KEY";
+}
+
 /**
- * Precedence: Gemini (production target) → compatible LLM key → mock.
- * Compatible client may use an OpenAI-compatible HTTP API under the hood;
- * product UI never names that vendor.
+ * Precedence:
+ * 1. Vertex Gemini via ADC (Cloud Run / GCP)
+ * 2. Gemini API key (local / Vercel)
+ * 3. Compatible LLM key (interim demos)
+ * 4. Deterministic mocks
  */
 export async function runAgentPrompt(opts: {
   agentSlug: string;
@@ -47,8 +74,24 @@ export async function runAgentPrompt(opts: {
     opts.sharedContext,
   ].join("\n");
 
-  if (geminiConfigured()) {
-    const text = await runGemini(instruction, opts.userMessage);
+  if (preferGoogleAdc()) {
+    try {
+      const text = await vertexGenerateContent({
+        system: instruction,
+        userMessage: opts.userMessage,
+      });
+      return { text, mode: "gemini" };
+    } catch (e) {
+      // If ADC token works but Vertex fails, surface the error — do not silently
+      // fall through to a different provider on Cloud Run.
+      if (await adcReady()) throw e;
+      // Local misconfig: fall through
+    }
+  }
+
+  const apiKey = geminiApiKey();
+  if (apiKey) {
+    const text = await runGeminiApiKey(apiKey, instruction, opts.userMessage);
     return { text, mode: "gemini" };
   }
 
@@ -98,11 +141,12 @@ async function runCompatibleLlm(
   return data.choices?.[0]?.message?.content?.trim() || "";
 }
 
-async function runGemini(system: string, userMessage: string): Promise<string> {
-  const key =
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_API_KEY ||
-    process.env.VERTEX_API_KEY!;
+/** Google AI Studio / API-key Gemini (Vercel / local fallback). */
+async function runGeminiApiKey(
+  key: string,
+  system: string,
+  userMessage: string,
+): Promise<string> {
   const model = process.env.SAATHI_MODEL || "gemini-2.5-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
   const res = await fetch(url, {
@@ -116,7 +160,7 @@ async function runGemini(system: string, userMessage: string): Promise<string> {
   });
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`Gemini failed: ${res.status} ${err.slice(0, 200)}`);
+    throw new Error(`Gemini API key failed: ${res.status} ${err.slice(0, 200)}`);
   }
   const data = (await res.json()) as {
     candidates?: { content?: { parts?: { text?: string }[] } }[];
@@ -157,7 +201,7 @@ function mockReply(slug: string, message: string): string {
       ],
     });
   }
-  return `Saathi (${slug}) mock reply — set GEMINI_API_KEY or LLM_API_KEY for live agents. You said: ${message.slice(0, 80)}`;
+  return `Saathi (${slug}) mock reply — use Vertex ADC on Cloud Run, or GEMINI_API_KEY / LLM_API_KEY locally. You said: ${message.slice(0, 80)}`;
 }
 
 /** @deprecated Use `@/lib/llm` — kept so old imports keep working. */

@@ -2,7 +2,8 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Chevron } from "@/components/icons";
 import { requireShopSession } from "@/lib/auth";
-import { llmStatusLabel } from "@/lib/llm";
+import { preferGoogleAdc } from "@/lib/google/adc";
+import { llmStatusDetail, llmStatusLabel } from "@/lib/llm";
 import { metaConfigured, metaLoginPathChoice, metaRedirectUri } from "@/lib/meta/config";
 import { getShopBundle } from "@/lib/shop-data";
 import { SettingsClient } from "./ui";
@@ -30,6 +31,8 @@ export default async function SettingsPage({
   const sp = await searchParams;
   const metaReady = metaConfigured();
   const llmLabel = llmStatusLabel();
+  const llmDetail = llmStatusDetail();
+  const vertexAdc = preferGoogleAdc();
   const connected = Boolean(shop.igUserId && shop.metaTokenEnc && !shop.instagramSim);
 
   return (
@@ -85,6 +88,8 @@ export default async function SettingsPage({
         igFlash={sp.ig || null}
         igReason={sp.reason || null}
         llmLabel={llmLabel}
+        llmDetail={llmDetail}
+        vertexAdc={vertexAdc}
         loginPath={metaLoginPathChoice()}
         redirectHint={metaRedirectUri()}
       />

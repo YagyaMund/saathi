@@ -5,6 +5,7 @@
 export {
   geminiConfigured,
   llmConfigured,
+  llmStatusDetail,
   llmStatusLabel,
   runAgentPrompt,
   type LlmMode,
