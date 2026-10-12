@@ -54,9 +54,7 @@ export default function LoginPage() {
   return (
     <div className="auth-shell">
       <div className="auth-card">
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>
-          SAATHI
-        </div>
+        <div className="auth-brand">Saathi</div>
         <h1>Your shop on Instagram</h1>
         <p className="lead">
           Sign in to approve catalogue drafts, answer buyers, and keep your

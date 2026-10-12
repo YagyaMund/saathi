@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { ItemsOrdersSeg } from "@/components/items-orders-seg";
-import { Chevron } from "@/components/icons";
-import { Thumb } from "@/components/thumb";
 import { requireShopSession } from "@/lib/auth";
 import { inr } from "@/lib/money";
-import { getShopBundle } from "@/lib/shop-data";
+import { getShopBundle, TONE } from "@/lib/shop-data";
 import { PdfButton } from "./pdf-button";
 
 export default async function ItemsPage() {
@@ -30,43 +28,33 @@ export default async function ItemsPage() {
         </Link>
       </div>
 
-      <div className="panel">
+      <div className="igrid">
         {data.items.map((item) => {
           const stock = item.variants.reduce((a, v) => a + v.stock, 0);
-          const zeroVariant = item.variants.find((v) => v.stock === 0);
+          const soldOut = item.status === "sold_out" || stock === 0;
           return (
             <Link
               key={item.id}
-              className="row"
+              className={`igrid-card${soldOut ? " sold" : ""}`}
               href={`/app/items/${item.id}`}
-              style={{ opacity: item.status === "sold_out" ? 0.62 : 1 }}
             >
-              <Thumb tone={item.thumbTone} />
-              <span className="order-copy">
-                <span className="order-title">{item.name}</span>
-                <span className="item-chips">
-                  {item.status === "sold_out" || stock === 0 ? (
-                    <span className="chip warn">Sold out</span>
-                  ) : (
-                    <span className="chip ok">{stock} in stock</span>
-                  )}
-                  {zeroVariant ? (
-                    <span className="chip warn">
-                      {zeroVariant.label} · none
-                    </span>
-                  ) : null}
-                </span>
-              </span>
-              <span className="order-amt">{inr(item.priceInr)}</span>
-              <span className="chev">
-                <Chevron />
+              <span
+                className="igrid-tone"
+                style={{
+                  background: TONE[item.thumbTone] || "var(--surface-3)",
+                }}
+              />
+              {soldOut ? <span className="igrid-badge">Sold out</span> : null}
+              <span className="igrid-meta">
+                <span className="igrid-name">{item.name}</span>
+                <span className="igrid-price">{inr(item.priceInr)}</span>
               </span>
             </Link>
           );
         })}
       </div>
 
-      <div className="sec">
+      <div className="sec pad-b">
         <PdfButton />
       </div>
     </AppShell>

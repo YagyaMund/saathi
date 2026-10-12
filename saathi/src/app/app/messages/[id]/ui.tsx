@@ -45,7 +45,7 @@ export function ThreadClient({
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+      <div className="thread-wrap">
         {messages.map((m) => {
           if (m.kind === "stopline") {
             return (
@@ -62,21 +62,9 @@ export function ThreadClient({
               /* keep */
             }
             return (
-              <div
-                key={m.id}
-                style={{
-                  background: "var(--warn-soft)",
-                  border: "1px solid var(--warn-line)",
-                  borderRadius: "var(--r)",
-                  padding: "13px 14px",
-                }}
-              >
-                <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--warn)" }}>
-                  {parsed.title}
-                </div>
-                <div style={{ fontSize: 13, color: "var(--ink-2)", marginTop: 5, lineHeight: 1.5 }}>
-                  {parsed.detail}
-                </div>
+              <div key={m.id} className="escalation">
+                <div className="esc-t">{parsed.title}</div>
+                <div className="esc-d">{parsed.detail}</div>
               </div>
             );
           }
@@ -84,18 +72,10 @@ export function ThreadClient({
             m.sender === "buyer"
               ? "bub them"
               : m.kind === "holding"
-                ? "bub us"
+                ? "bub them"
                 : "bub us";
           return (
-            <div
-              key={m.id}
-              className={cls}
-              style={
-                m.kind === "holding"
-                  ? { background: "var(--surface-2)", borderColor: "var(--line)" }
-                  : undefined
-              }
-            >
+            <div key={m.id} className={cls}>
               {m.body}
             </div>
           );
@@ -103,47 +83,44 @@ export function ThreadClient({
       </div>
 
       {needsSeller ? (
-        <div className="sec">
-          <div className="sec-h"><span className="sec-t">Answer in one line</span></div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        <div className="sec pad-b">
+          <div className="sec-h">
+            <span className="sec-t">Answer in one line</span>
+          </div>
+          <div className="quick-pick">
             {QUICK.map((q) => (
               <button
                 key={q}
+                type="button"
                 className="btn ghost"
-                style={{
-                  justifyContent: "flex-start",
-                  padding: "0 14px",
-                  height: 44,
-                  fontWeight: 500,
-                  fontSize: 14,
-                  borderColor: selected === q ? "var(--accent)" : undefined,
-                }}
+                data-selected={selected === q ? "true" : "false"}
                 onClick={() => setSelected(q)}
               >
                 {q}
               </button>
             ))}
           </div>
-          <div style={{ display: "flex", gap: 9, marginTop: 11 }}>
+          <div className="composer">
             <button
               className="iconbtn"
               aria-label="Hold to speak your answer"
-              style={{
-                width: 48,
-                height: 48,
-                margin: 0,
-                border: "1px solid var(--line-2)",
-                borderRadius: "var(--r)",
-              }}
               type="button"
             >
               <MicIcon />
             </button>
-            <button className="btn" disabled={busy} onClick={send}>
+            <button className="btn" disabled={busy} onClick={send} type="button">
               Send and let Saathi carry on
             </button>
           </div>
-          <div style={{ fontSize: 12, color: "var(--ink-2)", marginTop: 9, textAlign: "center", lineHeight: 1.45 }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: "var(--ink-2)",
+              marginTop: 9,
+              textAlign: "center",
+              lineHeight: 1.45,
+            }}
+          >
             {note}
           </div>
         </div>

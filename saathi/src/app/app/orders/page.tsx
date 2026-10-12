@@ -32,18 +32,20 @@ export default async function OrdersPage() {
       tab="items"
       needsCount={data.needsCount}
     >
-      <ItemsOrdersSeg
-        active="orders"
-        itemCount={data.items.length}
-        orderCount={orders.length}
-      />
+      <div className="items-top">
+        <ItemsOrdersSeg
+          active="orders"
+          itemCount={data.items.length}
+          orderCount={orders.length}
+        />
+      </div>
 
       {orders.length === 0 ? (
-        <div className="empty-panel" style={{ marginTop: 14 }}>
+        <div className="empty-panel">
           No orders yet. When a buyer confirms, it will show up here.
         </div>
       ) : (
-        <div className="panel" style={{ marginTop: 14 }}>
+        <div className="panel">
           {orders.map((o) => {
             const tone = statusTone(o.status);
             const first = o.items[0];

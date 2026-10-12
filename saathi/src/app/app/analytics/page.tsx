@@ -28,18 +28,20 @@ export default async function AnalyticsPage() {
       tab="analytics"
       needsCount={data.needsCount}
     >
-      <div className="stats">
-        <div className="stat">
-          <div className="n">{snap?.weekPeople ?? 0}</div>
-          <div className="l">people</div>
-        </div>
-        <div className="stat">
-          <div className="n">{snap?.weekOrders ?? 0}</div>
-          <div className="l">orders</div>
-        </div>
-        <div className="stat">
-          <div className="n">{inr(snap?.weekEarned ?? 0)}</div>
-          <div className="l">earned</div>
+      <div className="sec" style={{ marginTop: 16 }}>
+        <div className="stats">
+          <div className="stat">
+            <div className="n">{snap?.weekPeople ?? 0}</div>
+            <div className="l">people</div>
+          </div>
+          <div className="stat">
+            <div className="n">{snap?.weekOrders ?? 0}</div>
+            <div className="l">orders</div>
+          </div>
+          <div className="stat">
+            <div className="n">{inr(snap?.weekEarned ?? 0)}</div>
+            <div className="l">earned</div>
+          </div>
         </div>
       </div>
 
@@ -119,7 +121,7 @@ export default async function AnalyticsPage() {
             Your items
           </Link>
         </div>
-        <div className="panel">
+        <div className="panel inset">
           {bestsellers.map((item) => (
             <Link key={item.id} className="row" href={`/app/items/${item.id}`}>
               <Thumb tone={item.thumbTone} w={34} h={42} />

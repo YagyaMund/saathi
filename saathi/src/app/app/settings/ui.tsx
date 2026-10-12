@@ -125,13 +125,13 @@ export function SettingsClient({
   return (
     <>
       {(flash || note) && (
-        <div className="note-panel" style={{ marginTop: 10 }}>
+        <div className="note-panel" style={{ marginTop: 4, marginBottom: 10 }}>
           {flash || note}
         </div>
       )}
 
-      <div className="note-panel" style={{ marginTop: 10 }}>
-        <strong style={{ display: "block", marginBottom: 4 }}>
+      <div className="note-panel" style={{ marginBottom: 10 }}>
+        <strong style={{ display: "block", marginBottom: 4, color: "var(--ink)" }}>
           Before you connect
         </strong>
         Your Instagram must be a <strong>Professional</strong> account (Business
@@ -141,7 +141,7 @@ export function SettingsClient({
         {!metaReady ? (
           <>
             {" "}
-            <span style={{ color: "var(--warn, #b45309)" }}>
+            <span style={{ color: "var(--warn)" }}>
               Server is missing META_APP_ID / META_APP_SECRET — Connect stays
               disabled until those are set (see Meta App Review doc).
             </span>
@@ -149,7 +149,7 @@ export function SettingsClient({
         ) : null}
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+      <div className="profile-actions" style={{ paddingTop: 0 }}>
         {igConnected ? (
           <>
             <button
@@ -179,8 +179,8 @@ export function SettingsClient({
             }}
             style={
               metaReady
-                ? undefined
-                : { opacity: 0.45, pointerEvents: "none" as const }
+                ? { flex: 1 }
+                : { opacity: 0.45, pointerEvents: "none" as const, flex: 1 }
             }
           >
             Connect Instagram
@@ -190,7 +190,7 @@ export function SettingsClient({
 
       <div className="sec" style={{ marginTop: 22 }}>
         <div className="sec-h"><span className="sec-t">Agents / LLM</span></div>
-        <div className="panel">
+        <div className="panel inset">
           <div className="srow">
             <span className="sl">
               <span className="sk" style={{ display: "block" }}>Model status</span>
@@ -207,7 +207,7 @@ export function SettingsClient({
 
       <div className="sec">
         <div className="sec-h"><span className="sec-t">Your staff</span></div>
-        <div className="panel">
+        <div className="panel inset">
           {staff.map((s) => (
             <div className="srow" key={s.key}>
               <span className="sl">
@@ -227,7 +227,7 @@ export function SettingsClient({
 
       <div className="sec">
         <div className="sec-h"><span className="sec-t">Your records</span></div>
-        <div className="panel">
+        <div className="panel inset">
           <div className="srow">
             <span className="sl">
               <span className="sk" style={{ display: "block" }}>Google Sheet</span>
@@ -258,13 +258,13 @@ export function SettingsClient({
             </span>
           </div>
         </div>
-        <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 10, lineHeight: 1.5 }}>
+        <div className="pad-x" style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 10, lineHeight: 1.5 }}>
           Google Sign-In is stubbed until OAuth client credentials exist.
           {note && !flash ? ` ${note}` : ""}
         </div>
       </div>
 
-      <div className="sec" style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+      <div className="sec pad-b" style={{ display: "flex", flexDirection: "column", gap: 9 }}>
         <button className="btn ghost" onClick={switchSunita} type="button">
           Open Sunita Handicrafts demo
         </button>

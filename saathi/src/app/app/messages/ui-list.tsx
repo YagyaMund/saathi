@@ -70,6 +70,7 @@ export function MessagesClient({ conversations }: { conversations: Convo[] }) {
                     ? {
                         background: "var(--warn-soft)",
                         color: "var(--warn)",
+                        borderColor: "var(--warn-line)",
                       }
                     : undefined
                 }
@@ -104,8 +105,8 @@ export function MessagesClient({ conversations }: { conversations: Convo[] }) {
       )}
 
       {filter === "needs" && handled.length > 0 ? (
-        <div className="sec">
-          <div className="sec-h">
+        <div className="sec sec-flush">
+          <div className="sec-h pad-x">
             <span className="sec-t">Saathi handled these</span>
           </div>
           <div className="panel">

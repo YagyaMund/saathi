@@ -38,9 +38,7 @@ export default function SignupPage() {
   return (
     <div className="auth-shell">
       <div className="auth-card">
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>
-          SAATHI
-        </div>
+        <div className="auth-brand">Saathi</div>
         <h1>Open your shop</h1>
         <p className="lead">
           Multi-tenant — anyone can sign up. Connect Google later to put the

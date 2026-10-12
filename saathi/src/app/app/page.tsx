@@ -20,6 +20,10 @@ function todayLabel() {
   });
 }
 
+function initial(title: string) {
+  return (title.trim()[0] || "?").toUpperCase();
+}
+
 export default async function HomePage() {
   const session = await requireShopSession();
   const data = await getShopBundle(session.shopId);
@@ -72,8 +76,8 @@ export default async function HomePage() {
       tab="home"
       needsCount={needsCount}
     >
-      <div className="sec">
-        <div className="sec-h">
+      <div className="sec sec-flush">
+        <div className="sec-h pad-x">
           <span className="sec-t">Needs you · {needs.length || needsCount}</span>
         </div>
         {needs.length === 0 ? (
@@ -81,13 +85,14 @@ export default async function HomePage() {
             Nothing waiting. Saathi is handling the rest.
           </div>
         ) : (
-          <div className="panel need-list">
+          <div className="need-list">
             {needs.map((n) => (
               <Link
                 key={n.key}
                 className={`need-row${n.urgent ? " urgent" : ""}`}
                 href={n.href}
               >
+                <span className="need-av">{initial(n.title)}</span>
                 <span className="need-copy">
                   <span className="need-title">{n.title}</span>
                   <span className="need-detail">{n.detail}</span>
@@ -124,8 +129,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="sec">
-        <div className="sec-h">
+      <div className="sec sec-flush">
+        <div className="sec-h pad-x">
           <span className="sec-t">Your posts</span>
           <Link className="link" href="/app/posts">
             Show more
@@ -138,12 +143,6 @@ export default async function HomePage() {
                 className="pimg"
                 style={{ background: `var(--t-${p.thumbTone})` }}
               />
-              <span className="pm">
-                {p.postedAt.toLocaleDateString("en-IN", { weekday: "short" })}
-              </span>
-              <span className={`pm ${p.warnLabel ? "warn" : ""}`}>
-                {p.warnLabel || p.statusLabel || "All live"}
-              </span>
             </Link>
           ))}
         </div>

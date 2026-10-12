@@ -34,47 +34,59 @@ export default async function SettingsPage({
   const llmDetail = llmStatusDetail();
   const vertexAdc = preferGoogleAdc();
   const connected = Boolean(shop.igUserId && shop.metaTokenEnc && !shop.instagramSim);
+  const handle = (shop.instagramHandle || "").replace(/^@/, "");
+  const initial = (shop.name.trim()[0] || "S").toUpperCase();
 
   return (
     <AppShell
-      title="Settings"
-      sub={`${shop.name} · ${shop.city}`}
+      title={handle || shop.name}
+      sub=""
       tab=""
       backHref="/app"
       needsCount={data.needsCount}
     >
-      <div className="sec">
-        <div className="sec-h"><span className="sec-t">Instagram</span></div>
-        <div className="panel">
-          <div className="srow">
-            <span className="av" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>S</span>
-            <span className="sl">
-              <span className="sk" style={{ display: "block" }}>{shop.instagramHandle || "Not connected"}</span>
-              <span className="sv" style={{ display: "block" }}>
-                {connected
-                  ? "Connected via Instagram Login"
-                  : shop.instagramSim
-                    ? "Simulated · demo data"
-                    : "Disconnecting…"}
-                {shop.instagramFollowers
-                  ? ` · ${shop.instagramFollowers.toLocaleString("en-IN")} followers`
-                  : ""}
-              </span>
-            </span>
-            <span className={`chip ${connected ? "ok" : ""}`}>
-              {connected ? "Live" : "Sim"}
-            </span>
+      <div className="profile-head">
+        <span
+          className="av lg"
+          style={{ background: "var(--surface-2)", color: "var(--ink)" }}
+        >
+          {initial}
+        </span>
+        <div className="profile-stats">
+          <div>
+            <span className="ps-n">{data.items.length}</span>
+            <span className="ps-l">items</span>
           </div>
-          <div className="srow">
-            <span className="sl">
-              <span className="sk" style={{ display: "block" }}>What Saathi can do</span>
-              <span className="sv" style={{ display: "block" }}>
-                Read your posts · reply to DMs · reply to comments — never posts or edits for you
-              </span>
+          <div>
+            <span className="ps-n">
+              {(shop.instagramFollowers || 0).toLocaleString("en-IN")}
             </span>
-            <span className="chev"><Chevron /></span>
+            <span className="ps-l">followers</span>
+          </div>
+          <div>
+            <span className="ps-n">{data.pendingDrafts.length}</span>
+            <span className="ps-l">approvals</span>
           </div>
         </div>
+      </div>
+
+      <div className="profile-bio">
+        <div className="pb-name">{shop.name}</div>
+        {handle ? <div className="pb-handle">@{handle}</div> : null}
+        <div className="pb-city">
+          {shop.city}
+          {connected
+            ? " · Connected via Instagram Login"
+            : shop.instagramSim
+              ? " · Simulated · demo data"
+              : ""}
+        </div>
+      </div>
+
+      <div className="profile-actions">
+        <span className={`chip ${connected ? "ok" : ""}`}>
+          {connected ? "Live" : "Sim"}
+        </span>
       </div>
 
       <SettingsClient
@@ -98,7 +110,7 @@ export default async function SettingsPage({
         <div className="sec-h">
           <span className="sec-t">Catalogue</span>
         </div>
-        <div className="panel">
+        <div className="panel inset">
           <Link className="srow" href="/app/items">
             <span className="sl">
               <span className="sk" style={{ display: "block" }}>
@@ -130,7 +142,7 @@ export default async function SettingsPage({
 
       <div className="sec">
         <div className="sec-h"><span className="sec-t">Your shop</span></div>
-        <div className="panel">
+        <div className="panel inset">
           <div className="srow">
             <span className="sl">
               <span className="sk" style={{ display: "block" }}>Shop name</span>

@@ -36,7 +36,7 @@ export function AppShell({
           ) : null}
           <div className="hdr-copy">
             <h1>{title}</h1>
-            <div className="sub">{sub}</div>
+            {sub ? <div className="sub">{sub}</div> : null}
           </div>
           <Link className="iconbtn" href="/app/settings" aria-label="Settings">
             <SettingsIcon />
@@ -47,7 +47,7 @@ export function AppShell({
       <nav className="nav" aria-label="Main">
         <div className="nav-in">
           <Link href="/app" aria-current={tab === "home" ? "page" : undefined}>
-            <HomeIcon />
+            <HomeIcon filled={tab === "home"} />
             Home
           </Link>
           <Link
@@ -55,21 +55,21 @@ export function AppShell({
             aria-current={tab === "messages" ? "page" : undefined}
           >
             {needsCount > 0 ? <span className="dot">{needsCount}</span> : null}
-            <MsgIcon />
+            <MsgIcon filled={tab === "messages"} />
             Messages
           </Link>
           <Link
             href="/app/analytics"
             aria-current={tab === "analytics" ? "page" : undefined}
           >
-            <AnalyticsIcon />
+            <AnalyticsIcon filled={tab === "analytics"} />
             Analytics
           </Link>
           <Link
             href="/app/items"
             aria-current={tab === "items" ? "page" : undefined}
           >
-            <ItemsIcon />
+            <ItemsIcon filled={tab === "items"} />
             Items
           </Link>
         </div>
