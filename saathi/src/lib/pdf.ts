@@ -1,6 +1,10 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { prisma } from "@/lib/db";
-import { inr } from "@/lib/money";
+
+/** Helvetica/WinAnsi cannot encode ₹ — use ASCII for PDF body. */
+function inrPdf(value: number): string {
+  return `Rs ${Number(value).toLocaleString("en-IN")}`;
+}
 
 /** Manual catalogue PDF — only when she taps Generate. Never auto on stock change. */
 export async function generateCataloguePdf(shopId: string): Promise<{
