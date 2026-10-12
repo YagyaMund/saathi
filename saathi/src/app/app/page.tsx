@@ -39,6 +39,7 @@ export default async function HomePage() {
     href: string;
     title: string;
     detail: string;
+    mark: string;
     urgent?: boolean;
   }[] = [];
 
@@ -48,6 +49,7 @@ export default async function HomePage() {
       href: `/app/messages/${urgent.id}`,
       title: `${urgent.buyerName.split(" ")[0]} is waiting for an answer`,
       detail: `${urgent.lastPreview} · ${relative(urgent.lastAt)}`,
+      mark: initial(urgent.buyerName),
       urgent: true,
     });
   }
@@ -57,6 +59,7 @@ export default async function HomePage() {
       href: "/app/approvals",
       title: `${pendingDrafts.length} items ready to approve`,
       detail: "From this morning's post · some need a price",
+      mark: "A",
     });
   }
   if (paymentIssue) {
@@ -65,6 +68,7 @@ export default async function HomePage() {
       href: `/app/messages/${paymentIssue.id}`,
       title: `${paymentIssue.buyerName.split(" ")[0]}'s payment doesn't match`,
       detail: paymentIssue.lastPreview,
+      mark: initial(paymentIssue.buyerName),
       urgent: true,
     });
   }
