@@ -53,8 +53,22 @@ App Review / Business Verification: operator steps (not in-repo).
 
 Precedence (`src/lib/llm.ts`): Gemini → LLM key → mocks. Status is honest (Gemini / LLM / Mock).
 
-## Deploy (Vercel)
+## Deploy (dual: Vercel + Cloud Run)
 
-- GitHub: https://github.com/YagyaMund/saathi · Root Directory: `saathi`
-- Env: `DATABASE_URL`, `AUTH_SECRET`, optional `GEMINI_API_KEY` / `LLM_API_KEY`, optional `META_*`
-- Build: `prisma migrate deploy`. Reseed when needed: `npm run db:seed` with production `DATABASE_URL`.
+| Host | URL |
+| --- | --- |
+| **Vercel** | https://saathi-ruby.vercel.app |
+| **Cloud Run** | https://saathi-160174088264.us-central1.run.app |
+
+Both use the same Cloud SQL Postgres (`saathi-pg` in `saathi-510820`). Keep Vercel live; Cloud Run is the GCP path.
+
+**Vercel:** Root Directory `saathi`; build runs `prisma migrate deploy && next build`.
+
+**Cloud Run:** `Dockerfile` + `docker-entrypoint.sh` (migrate then `next start` on `PORT`). Image: `us-central1-docker.pkg.dev/saathi-510820/saathi/saathi`. Secrets in Secret Manager (`saathi-database-url`, `saathi-auth-secret`, `saathi-llm-api-key`). Set `APP_BASE_URL` to the Cloud Run URL on that service.
+
+**Meta callbacks:** add *both* redirect URIs in the Meta app:
+
+- `https://saathi-ruby.vercel.app/api/auth/instagram/callback`
+- `https://saathi-160174088264.us-central1.run.app/api/auth/instagram/callback`
+
+Env (either host): `DATABASE_URL`, `AUTH_SECRET`, optional `GEMINI_API_KEY` / `LLM_API_KEY`, optional `META_*`.
