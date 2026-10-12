@@ -5,6 +5,36 @@ import { getConversation } from "@/lib/shop-data";
 import { prisma } from "@/lib/db";
 import { ThreadClient } from "./ui";
 
+type ThreadMsg = {
+  id: string;
+  sender: string;
+  body: string;
+  kind: string;
+};
+
+/** Hide legacy "I'll tell them: …" echoes that duplicated the seller line. */
+function dedupeEchoMessages(messages: ThreadMsg[]): ThreadMsg[] {
+  const out: ThreadMsg[] = [];
+  for (const m of messages) {
+    if (m.sender === "saathi") {
+      const prev = out[out.length - 1];
+      if (prev?.sender === "seller") {
+        const b = m.body.trim();
+        const t = prev.body.trim();
+        if (
+          b === t ||
+          b === `I'll tell them: ${t}` ||
+          b === `Sent on Instagram: ${t}`
+        ) {
+          continue;
+        }
+      }
+    }
+    out.push(m);
+  }
+  return out;
+}
+
 export default async function ThreadPage({
   params,
 }: {
@@ -33,12 +63,14 @@ export default async function ThreadPage({
       <ThreadClient
         conversationId={conversation.id}
         needsSeller={conversation.needsSeller}
-        messages={conversation.messages.map((m) => ({
-          id: m.id,
-          sender: m.sender,
-          body: m.body,
-          kind: m.kind,
-        }))}
+        messages={dedupeEchoMessages(
+          conversation.messages.map((m) => ({
+            id: m.id,
+            sender: m.sender,
+            body: m.body,
+            kind: m.kind,
+          })),
+        )}
       />
     </AppShell>
   );

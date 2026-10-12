@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { formatEveningReport } from "@/lib/evening-report";
 import { buildSharedContext } from "@/lib/prompts";
 import { runAgentPrompt } from "@/lib/llm";
 
@@ -42,8 +43,11 @@ export async function POST() {
       userMessage: `Write tonight's evening report. Today orders=${shop.analyticsSnap?.todayOrders}, earned=${shop.analyticsSnap?.todayEarned}. Unmet: ${shop.unmetAsks.map((u) => `${u.label}:${u.count}`).join(", ")}`,
     });
 
+    // Persist seller-facing prose (voice_script), never raw JSON fences.
+    const displayBody = formatEveningReport(result.text);
+
     const report = await prisma.eveningReport.create({
-      data: { shopId: shop.id, body: result.text },
+      data: { shopId: shop.id, body: displayBody },
     });
 
     return NextResponse.json({

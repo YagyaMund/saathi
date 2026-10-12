@@ -9,6 +9,15 @@ import { houseRules, loadAgentPrompt } from "@/lib/prompts";
 /** Production path is Vertex Gemini via ADC only. */
 export type LlmMode = "gemini" | "mock";
 
+/** Cloud Run / GCE — never silent-mock agents in production. */
+function isCloudRuntime() {
+  return Boolean(
+    process.env.K_SERVICE ||
+      process.env.K_REVISION ||
+      process.env.GCE_METADATA_HOST,
+  );
+}
+
 export function geminiConfigured() {
   return preferGoogleAdc();
 }
@@ -31,6 +40,7 @@ export function llmStatusDetail(): string {
 /**
  * Vertex Gemini via ADC only. Optional `images` for multimodal understanding
  * (Post Reader, payment screenshots). Not Imagen — we read images, we don't generate them.
+ * On Cloud Run, ADC failures throw (no mock fallback). Local/dev may mock if ADC absent.
  */
 export async function runAgentPrompt(opts: {
   agentSlug: string;
@@ -47,6 +57,11 @@ export async function runAgentPrompt(opts: {
   ].join("\n");
 
   if (!preferGoogleAdc()) {
+    if (isCloudRuntime()) {
+      throw new Error(
+        `Vertex ADC required for agent "${opts.agentSlug}" on Cloud Run (mock disabled in production)`,
+      );
+    }
     return { text: mockReply(opts.agentSlug, opts.userMessage), mode: "mock" };
   }
 
@@ -58,7 +73,7 @@ export async function runAgentPrompt(opts: {
     });
     return { text, mode: "gemini" };
   } catch (e) {
-    if (await adcReady()) throw e;
+    if (isCloudRuntime() || (await adcReady())) throw e;
     return { text: mockReply(opts.agentSlug, opts.userMessage), mode: "mock" };
   }
 }

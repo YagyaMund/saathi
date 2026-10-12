@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { formatEveningReport } from "@/lib/evening-report";
 
 export function AnalystButton({ latest }: { latest: string }) {
-  const [body, setBody] = useState(latest);
+  const [raw, setRaw] = useState(latest);
   const [mode, setMode] = useState("");
   const [busy, setBusy] = useState(false);
+  const body = useMemo(() => formatEveningReport(raw), [raw]);
 
   async function run() {
     setBusy(true);
@@ -16,7 +18,7 @@ export function AnalystButton({ latest }: { latest: string }) {
       setMode(data.error || "failed");
       return;
     }
-    setBody(data.report?.body || "");
+    setRaw(data.report?.body || "");
     const label =
       data.mode === "gemini"
         ? "Gemini · Vertex"
@@ -38,7 +40,14 @@ export function AnalystButton({ latest }: { latest: string }) {
         Evening report
       </div>
       {body ? (
-        <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--ink-2)" }}>
+        <div
+          style={{
+            fontSize: 13,
+            lineHeight: 1.55,
+            color: "var(--ink-2)",
+            whiteSpace: "pre-wrap",
+          }}
+        >
           {body}
         </div>
       ) : (
@@ -49,6 +58,7 @@ export function AnalystButton({ latest }: { latest: string }) {
         style={{ marginTop: 12 }}
         disabled={busy}
         onClick={run}
+        type="button"
       >
         Run Shop Analyst now
       </button>

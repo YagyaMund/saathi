@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { Thumb } from "@/components/thumb";
 import { requireShopSession } from "@/lib/auth";
+import { formatEveningReport } from "@/lib/evening-report";
 import { inr } from "@/lib/money";
 import { getShopBundle } from "@/lib/shop-data";
 import { AnalystButton } from "./analyst-button";
@@ -141,7 +142,9 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="sec">
-        <AnalystButton latest={data.shop.eveningReports[0]?.body || ""} />
+        <AnalystButton
+          latest={formatEveningReport(data.shop.eveningReports[0]?.body || "")}
+        />
       </div>
     </AppShell>
   );
